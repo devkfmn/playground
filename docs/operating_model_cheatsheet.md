@@ -78,6 +78,7 @@ Get a phased implementation plan with real files, risks, and verification steps 
 Do this:
 Tell the agent to use Plan Mode for non-trivial work.
 Resolve the issue source up front (GitHub issue URL/number vs pasted issue text).
+Plan Mode usually cannot set GitHub labels; after the plan is accepted, the **first** Agent-mode step is **`status:in-progress`** (drop other `status:*`) **before any edits**—see step 2 in `.cursor/commands/plan-issue.md`.
 
 Example prompt:
 
@@ -116,6 +117,7 @@ Execute the accepted scope without drifting into adjacent work.
 
 Do this:
 Tell the agent to implement the approved plan and keep changes scoped.
+If the source is a GitHub issue and labels are not already updated, apply **`status:in-progress`** (remove other `status:*`) **before** the first file change—see step 2 in `.cursor/commands/plan-issue.md`.
 
 Example prompt:
 
@@ -211,7 +213,7 @@ Update the relevant operating-model docs in the same change and summarize what c
 1. Create or refine the GitHub issue.
 2. Start a fresh Cursor chat.
 3. Use Plan Mode for non-trivial work.
-4. Approve the plan.
+4. Approve the plan. For GitHub-tracked work, set **`status:in-progress`** (and drop other **`status:*`**) **before** the first edit when you leave Plan Mode—see `.cursor/commands/plan-issue.md` step 2.
 5. Implement only the approved scope.
 6. Run real verification commands.
 7. Review locally.
