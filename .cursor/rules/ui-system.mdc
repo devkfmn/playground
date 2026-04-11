@@ -1,0 +1,25 @@
+---
+description: UI consistency for the playground React app (layout, spacing, states, components).
+globs:
+  - "src/**/*.{js,jsx,css}"
+alwaysApply: false
+---
+
+# UI system
+
+## References
+
+- App layout and navigation: [src/App.jsx](@src/App.jsx)
+- Global styles: [src/index.css](@src/index.css)
+
+## Principles
+
+- Reuse existing **sidebar**, **main** content area, and **page** patterns from current pages (e.g. [src/pages/Home.jsx](@src/pages/Home.jsx), [src/pages/Info.jsx](@src/pages/Info.jsx)).
+- Prefer **semantic HTML** (`main`, `section`, headings) and existing **class names** (`page`, `page-lead`, `info-section`, etc.) before adding new systems.
+- **Spacing and type:** follow established margins/padding and heading hierarchy in `index.css` and existing pages.
+- **States:** loading and empty states should be simple and consistent if you add async UI later.
+- **Responsive:** keep layouts readable; avoid fixed widths that break narrow viewports unless matching existing patterns.
+
+## Git policy reminder
+
+- UI work still ships through **PRs to `dev`** per [git-workflow.mdc](@.cursor/rules/git-workflow.mdc).

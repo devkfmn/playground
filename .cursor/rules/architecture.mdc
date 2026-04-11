@@ -1,0 +1,28 @@
+---
+description: Repo layout, naming, and allowed patterns for this Vite + React playground SPA.
+alwaysApply: false
+---
+
+# Architecture
+
+## Stack
+
+- Vite, React, React Router ([package.json](@package.json)).
+
+## Layout
+
+- **Pages:** add under `src/pages/` as `*.jsx` components.
+- **Routes and nav:** register in [src/routes.jsx](@src/routes.jsx) (`navRoutes`: `path`, `label`, `element`).
+- **App shell:** [src/App.jsx](@src/App.jsx) renders sidebar + `<Routes>` from `navRoutes`.
+- **Bootstrap:** [src/main.jsx](@src/main.jsx).
+
+## Conventions
+
+- Prefer functional components and existing JSX/CSS patterns in `src/`.
+- Keep new routes and labels consistent with current `navRoutes` entries.
+- Do not introduce new top-level folders without a clear need; stay aligned with this small SPA structure.
+
+## Cross-cutting policy
+
+- Git and PR rules: [git-workflow.mdc](@.cursor/rules/git-workflow.mdc).
+- UI consistency: [ui-system.mdc](@.cursor/rules/ui-system.mdc).

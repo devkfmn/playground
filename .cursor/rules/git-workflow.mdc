@@ -1,0 +1,21 @@
+---
+description: Branching, PR base branch (dev), and promotion rules. Apply whenever creating branches, PRs, or discussing merge strategy.
+alwaysApply: false
+---
+
+# Git workflow
+
+## Default branch and integration
+
+- **Feature branches** merge via pull request into **`dev`**, not `main`.
+- **Agents** must use **`gh pr create --base dev`** (or equivalent) so every agent-driven PR targets `dev`.
+- **Never** target **`main`** with agent-created PRs, direct pushes to `main`, or agent-driven merges into `main`.
+
+## Promotion to main
+
+- **`dev` → `main`** is a **human-controlled** release step, after checks on `dev` and the [release-readiness](@.cursor/skills/release-readiness/SKILL.md) checklist.
+- Agents document and implement on `dev`; they do not complete the production promotion.
+
+## CI note
+
+- GitHub Actions for this repo currently run on pushes to `main` and on pull requests ([.github/workflows/ci.yml](@.github/workflows/ci.yml)). Consider extending CI to validate PRs into `dev` as a follow-up so `dev` stays green.

@@ -15,6 +15,9 @@ dist-ssr
 # Secrets (GitHub MCP token)
 .cursor/.env
 
+# Cursor hooks ephemeral marker (post-edit build gate)
+.cursor/hooks/.dirty
+
 # Editor
 .vscode/*
 !.vscode/extensions.json
