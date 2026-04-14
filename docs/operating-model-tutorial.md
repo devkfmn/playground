@@ -6,6 +6,8 @@ Replace `#42` with your issue number everywhere it appears.
 
 Skills use **`/`** in Agent. If a skill does not appear, check **Cursor Settings → Rules** and confirm project skills are loaded.
 
+Cursor product links are indexed in [cursor_sources.md](cursor_sources.md).
+
 ---
 
 ## 1. Issue
@@ -24,7 +26,7 @@ I am working issue #42. Issue body: [paste the full issue]. Restate the acceptan
 
 ## 2. Plan
 
-**Goal:** Produce an implementation plan before coding. Turn on **Plan Mode** in Cursor, then send the prompt below ([Plan mode](https://cursor.com/docs/agent/plan-mode)).
+**Goal:** Produce an implementation plan before coding. Turn on **Plan Mode** ([Plan mode](https://cursor.com/docs/agent/plan-mode)), then send the prompt below.
 
 **Prompt:**
 
@@ -38,26 +40,30 @@ Issue #42 — [short title]. Paste the issue goal and acceptance criteria here i
 
 ## 3. Build
 
-**Goal:** Implement the approved plan and open **one PR into `dev`** (never `main`).
+**Goal:** Implement on a **feature branch** only; push that branch; open **one PR into `dev`** (never `main`). Do not push or commit to `dev` or `main`.
 
 **Prompt:**
 
 ```text
-/implement-from-plan
-
-Implement the approved plan for #42. Use the builder-agent if the change is large. Create a branch, complete the work, run npm run build, then open the PR with: gh pr create --base dev --title "feat: …" --body "Closes #42". Do not use --base main.
+Delegate builder-agent for issue #42. Hand off: (1) issue link or number and acceptance criteria, (2) the full approved plan from the previous step, (3) branch name feature/issue-42-[short-slug]. The builder must create that branch from latest dev, implement, run npm run build, push only the feature branch, and run: gh pr create --base dev --title "feat: …" --body "Closes #42". Do not merge the PR.
 ```
 
 ---
 
 ## 4. Auto review
 
-**Goal:** Review the change before merging the PR to `dev`.
+**Goal:** Review the PR before a human merges it to `dev`. Always **code-review-agent** first, then **ui-review-agent**, unless the change does not touch `src/**/*.{js,jsx,css}` — then skip **ui-review-agent** and say **UI N/A** in the thread.
 
-**Prompt:**
+**Prompt (code review):**
 
 ```text
-Review the current PR/branch for #42 in two passes: (1) code and architecture per .cursor/rules/architecture.mdc, (2) UI per .cursor/rules/ui-system.mdc for any src/ changes. Give verdict, findings with severity, and put [[BLOCKING]] on its own line if the PR must not merge to dev yet.
+Delegate code-review-agent for the PR / branch for issue #42. Use the diff and PR description. Follow the required output shape in .cursor/agents/code-review-agent.md.
+```
+
+**Prompt (UI review — only if `src/**/*.{js,jsx,css}` changed):**
+
+```text
+Delegate ui-review-agent for the PR / branch for issue #42. Follow the required output shape in .cursor/agents/ui-review-agent.md.
 ```
 
 ---
@@ -71,10 +77,10 @@ Review the current PR/branch for #42 in two passes: (1) code and architecture pe
 ```text
 /fix-from-review
 
-Fix every blocking and important finding from the last review for #42. Run npm run build after edits. Say what you changed.
+Fix every blocking and important finding from the latest reviews for #42. Delegate builder-agent on the same feature branch; run npm run build after edits. Then delegate code-review-agent again, then ui-review-agent (or UI N/A if no src/**/*.{js,jsx,css} changed).
 ```
 
-Repeat this step until there is no **`[[BLOCKING]]`** in the latest review (or you explicitly accept the risk).
+Repeat this step until there is no **`[[BLOCKING]]`** in the latest review outputs (or you explicitly accept the risk).
 
 ---
 
@@ -125,7 +131,7 @@ We are about to promote dev to main. Walk through the release-readiness checklis
 1. Issue — prompt from §1  
 2. Plan — prompt from §2  
 3. Build — prompt from §3  
-4. Auto review — prompt from §4  
+4. Auto review — prompts from §4 (code always; UI only when applicable)  
 5. Fix loop — prompt from §5 (repeat until clean)  
 6. Dev — merge in GitHub, then prompt from §6  
 7. Human test — prompt from §7  
