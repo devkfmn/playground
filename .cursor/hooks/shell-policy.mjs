@@ -1,5 +1,5 @@
 /**
- * Conceptual: pr-open-trigger + strict PR base dev / no push to main.
+ * Conceptual: pr-open-trigger + strict PR base dev / no push to main or dev.
  * beforeShellExecution — return permission JSON.
  */
 import fs from 'node:fs'
@@ -33,12 +33,29 @@ function printDeny(userMessage, agentMessage) {
   )
 }
 
-// Block pushes to main
+// Block pushes to protected branches (explicit refspecs only)
 if (/\bgit\s+push\b/i.test(command)) {
-  if (/\bmain\b/.test(command) || /:main\b/.test(command) || /refs\/heads\/main/.test(command)) {
+  const pushToMain =
+    /\bmain\b/.test(command) ||
+    /:main\b/.test(command) ||
+    /refs\/heads\/main\b/.test(command)
+  const pushToDev =
+    /\sorigin\s+dev(?:\s|$)/i.test(command) ||
+    /:dev(?:\s|$)/i.test(command) ||
+    /refs\/heads\/dev\b/.test(command) ||
+    /\supstream\s+dev(?:\s|$)/i.test(command)
+
+  if (pushToMain) {
     printDeny(
       'Push to main blocked by project hook.',
-      'Do not push to main. Open a PR into dev (gh pr create --base dev) and merge there first; main is human-release only.'
+      'Do not push to main. Use a feature branch and gh pr create --base dev; main is human-release only.'
+    )
+    process.exit(0)
+  }
+  if (pushToDev) {
+    printDeny(
+      'Push to dev blocked by project hook.',
+      'Do not push to dev. Push only your feature branch; a human merges the PR into dev.'
     )
     process.exit(0)
   }
@@ -59,7 +76,7 @@ if (/\bgh(\.exe)?\s+pr\s+create\b/i.test(command)) {
     JSON.stringify({
       permission: 'allow',
       agent_message:
-        'PR targets dev. After creation, run /code-review and /ui-review (or delegate code-review-agent and ui-review-agent).',
+        'PR targets dev. Next: delegate code-review-agent, then ui-review-agent (skip ui-review-agent with UI N/A if no src/**/*.{js,jsx,css} changed).',
     })
   )
   process.exit(0)

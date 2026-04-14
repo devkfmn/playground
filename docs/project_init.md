@@ -37,7 +37,7 @@ Setup and maintenance checklist for this repository (stack, CI, hygiene, and Cur
 |------|--------|
 | Agent instructions | [AGENTS.md](../AGENTS.md) |
 | Project rules | `.cursor/rules/ui-system.mdc`, `.cursor/rules/architecture.mdc`, `.cursor/rules/git-workflow.mdc` |
-| Skills | `.cursor/skills/plan-from-issue/`, `implement-from-plan/`, `code-review/`, `ui-review/`, `fix-from-review/`, `release-readiness/` (each contains `SKILL.md`) |
+| Skills | `.cursor/skills/plan-from-issue/`, `code-review/`, `ui-review/`, `fix-from-review/`, `release-readiness/` (each contains `SKILL.md`) |
 | Subagents | `.cursor/agents/builder-agent.md`, `code-review-agent.md`, `ui-review-agent.md` |
 | Hooks | `.cursor/hooks.json`, `.cursor/hooks/*.mjs` |
 | Architecture map | [docs/cursor-operating-model-architecture.md](cursor-operating-model-architecture.md) |

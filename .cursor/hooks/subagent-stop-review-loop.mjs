@@ -1,5 +1,5 @@
 /**
- * Conceptual: review-fix-loop — if subagent summary contains [[BLOCKING]], nudge fix-from-review.
+ * Conceptual: review-fix-loop — if subagent summary contains [[BLOCKING]], nudge fix-from-review + builder + re-review.
  */
 import fs from 'node:fs'
 
@@ -21,7 +21,7 @@ if (!summary.includes('[[BLOCKING]]')) {
 process.stdout.write(
   JSON.stringify({
     followup_message:
-      'Subagent reported [[BLOCKING]]. Run /fix-from-review (or implement fixes) addressing the findings, then re-run review.',
+      'Subagent reported [[BLOCKING]]. Run /fix-from-review, delegate builder-agent on the same feature branch, then re-run code-review-agent and ui-review-agent (or UI N/A per ui-review-agent instructions).',
   })
 )
 process.exit(0)

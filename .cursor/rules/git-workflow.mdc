@@ -8,13 +8,14 @@ alwaysApply: false
 ## Default branch and integration
 
 - **Feature branches** merge via pull request into **`dev`**, not `main`.
-- **Agents** must use **`gh pr create --base dev`** (or equivalent) so every agent-driven PR targets `dev`.
+- **Automated agents** (subagents, cloud agent, and similar): implement only on a **feature branch**; **push only that branch**; open PRs with **`gh pr create --base dev`** (or equivalent). They must **not** push to **`dev`** or **`main`**, merge into those branches, or commit while checked out on **`dev`**/**`main`**.
+- **Humans** merge approved PRs into **`dev`** and later promote **`dev` → `main`**.
 - **Never** target **`main`** with agent-created PRs, direct pushes to `main`, or agent-driven merges into `main`.
 
 ## Promotion to main
 
 - **`dev` → `main`** is a **human-controlled** release step, after checks on `dev` and the [release-readiness](@.cursor/skills/release-readiness/SKILL.md) checklist.
-- Agents document and implement on `dev`; they do not complete the production promotion.
+- Agents deliver work via PRs into `dev`; they do not complete the production promotion.
 
 ## CI note
 

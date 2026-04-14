@@ -1,6 +1,6 @@
 # Cursor System Overview
 
-**Canonical paths and diagrams:** [cursor-operating-model-architecture.md](cursor-operating-model-architecture.md) (maps this overview to `.cursor/` files and real hook events). **Doc index:** [cursor_sources.md](cursor_sources.md). **Root workflow:** [AGENTS.md](../AGENTS.md).
+**Canonical paths and diagrams:** [cursor-operating-model-architecture.md](cursor-operating-model-architecture.md) (maps this overview to `.cursor/` files and real hook events). **Doc index:** [cursor_sources.md](cursor_sources.md) (includes [Cloud agent](https://cursor.com/docs/cloud-agent)). **Root workflow:** [AGENTS.md](../AGENTS.md).
 
 This document defines all required Rules, Skills, Subagents, and Hooks for the project.
 
@@ -11,7 +11,7 @@ Each entry describes a file that must be created and refined.
 ## RULES (Global Policy Layer)
 
 ### AGENTS.md
-Defines the global workflow: issue-first development, mandatory planning, dev-only changes, automated review loop, and human testing on dev before promoting to main.
+Defines the global workflow: issue-first development, mandatory planning, feature-branch-only work for automated agents, PRs to `dev`, automated review loop, human merge to `dev`, human testing, and human promotion to `main`.
 
 ### rules/ui-system.md
 Defines the complete UI design system including tokens, layout, components, states, and consistency rules.
@@ -20,64 +20,65 @@ Defines the complete UI design system including tokens, layout, components, stat
 Defines architectural constraints, folder structure, naming conventions, and allowed patterns.
 
 ### rules/git-workflow.md
-Defines branching strategy, PR requirements, and rules for merging into dev and promoting to main.
+Defines branching strategy, PR requirements, forbidden direct pushes to `dev`/`main` by automated agents, and rules for merging into dev and promoting to main.
 
 ---
 
 ## SKILLS (Reusable Procedures)
 
-### skills/plan-from-issue.md
+Repo layout: [.cursor/skills/&lt;name&gt;/SKILL.md](../.cursor/skills/).
+
+### skills/plan-from-issue
 Creates a detailed, structured implementation plan based on a GitHub issue.
 
-### skills/implement-from-plan.md
-Implements a feature strictly following an approved implementation plan.
+### skills/code-review
+Checklist for technical review; the **standard flow** delegates **code-review-agent** instead (see Subagents).
 
-### skills/code-review.md
-Reviews code for correctness, edge cases, regressions, and adherence to architecture rules.
+### skills/ui-review
+Checklist for UI review; the **standard flow** delegates **ui-review-agent** instead (see Subagents).
 
-### skills/ui-review.md
-Reviews UI for consistency with the design system, including layout, spacing, responsiveness, and states.
+### skills/fix-from-review
+Applies fixes based on structured review findings until all blocking issues are resolved (then re-run review subagents per [AGENTS.md](../AGENTS.md)).
 
-### skills/fix-from-review.md
-Applies fixes based on structured review findings until all blocking issues are resolved.
-
-### skills/release-readiness.md
+### skills/release-readiness
 Validates that a feature is ready to be promoted from dev to main.
 
 ---
 
 ## SUBAGENTS (Specialized Roles)
 
+Paths: [.cursor/agents/*.md](../.cursor/agents/).
+
 ### subagents/builder-agent.md
-Implements features, manages branches, and creates or updates PRs based on approved plans.
+Implements features on a feature branch from an approved plan; pushes that branch only; opens or updates PRs targeting **`dev`**.
 
 ### subagents/code-review-agent.md
-Evaluates PRs for technical correctness, architectural compliance, and potential risks.
+First pass of auto review: technical correctness, architectural compliance, and risks.
 
 ### subagents/ui-review-agent.md
-Evaluates UI changes for design system compliance and visual consistency.
+Second pass of auto review: design system and UI consistency (skipped when no UI-relevant `src/` changes per agent instructions).
 
 ---
 
 ## HOOKS (Automation & Enforcement)
 
 ### hooks/pre-implementation-check
-Ensures that implementation cannot start without an approved plan and linked issue.
+Optional strict gate: implementation-like prompts may require a linked issue or plan marker when `CURSOR_STRICT_PLAN_GATE=1`.
 
 ### hooks/post-implementation-check
-Runs linting, build, and tests to validate basic correctness after implementation.
+After edits under `src/`, marks dirty; on agent stop, runs **`npm run build`** when appropriate.
 
-### hooks/pr-open-trigger
-Triggers code review and UI review agents when a PR is created or updated.
+### hooks/pr-open-trigger (+ branch policy)
+`beforeShellExecution`: enforces **`gh pr create --base dev`** and blocks risky **`git push`** patterns (including to **`main`** and **`dev`**).
 
 ### hooks/review-gate
-Blocks progression if any review agent reports blocking issues.
+`subagentStart`: reserved for future gating; v1 logs only.
 
 ### hooks/review-fix-loop
-Automatically re-invokes the builder agent to fix issues until all review checks pass.
+`subagentStop`: if a review summary contains **`[[BLOCKING]]`**, suggests **`/fix-from-review`**, **builder-agent**, and re-running the review subagents.
 
 ---
 
 ## SYSTEM FLOW (REFERENCE)
 
-Issue → Plan → Build → Auto Review → Fix Loop → Dev → Human Test → Main
+Issue → Plan → Build (builder-agent) → Auto Review (code-review-agent → ui-review-agent, with documented UI N/A skip) → Fix Loop → Dev (human merge PR) → Human Test → Main (human promotion)

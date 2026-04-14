@@ -1,14 +1,14 @@
 ---
 name: ui-review
-description: Review UI changes for design-system and layout consistency. Invoke via /ui-review when src UI files changed.
+description: UI review checklist. Standard flow delegates ui-review-agent after code-review-agent; use /ui-review for ad-hoc checklist without a subagent if needed.
 disable-model-invocation: true
 ---
 
 # UI review
 
-## When to use
+## Standard workflow
 
-- Pull requests or changes touching [ui-system.mdc](@.cursor/rules/ui-system.mdc) globs (`src/**/*.{js,jsx,css}`).
+**code-review-agent** runs first. If the change touches **`src/**/*.{js,jsx,css}`**, delegate **[ui-review-agent](@.cursor/agents/ui-review-agent.md)** next; otherwise record **UI N/A** and skip. Use this skill only when you need the same checklist inline without delegating that subagent.
 
 ## Checklist
 
@@ -23,7 +23,3 @@ disable-model-invocation: true
 - **Summary** — short.
 - **Findings** — severity: `suggestion` | `important` | `blocking`.
 - Use **`[[BLOCKING]]`** in the body if the UI should not merge until fixed.
-
-## Isolation
-
-- Delegate to [ui-review-agent](@.cursor/agents/ui-review-agent.md) for a focused pass when helpful.

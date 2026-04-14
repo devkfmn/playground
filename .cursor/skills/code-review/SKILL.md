@@ -1,14 +1,14 @@
 ---
 name: code-review
-description: Technical code review for correctness, regressions, and architecture fit. Invoke via /code-review on a PR, branch, or described change set.
+description: Technical code review checklist. Standard flow delegates code-review-agent first; use /code-review for ad-hoc checklist without a subagent if needed.
 disable-model-invocation: true
 ---
 
 # Code review
 
-## When to use
+## Standard workflow
 
-- Before merging a PR to `dev`, or when validating a completed implementation.
+After **builder-agent** opens a PR, the single prescribed step is to delegate **[code-review-agent](@.cursor/agents/code-review-agent.md)**, then **ui-review-agent** (or **UI N/A**). Use this skill only when you need the same checklist inline without delegating that subagent.
 
 ## Checklist
 
@@ -23,7 +23,3 @@ disable-model-invocation: true
 - **Summary** — a few sentences.
 - **Findings** — severity: `suggestion` | `important` | `blocking`.
 - If anything is blocking merge, add a single line anywhere in the review body: **`[[BLOCKING]]`** (hooks and fix loop key off this when subagents return summaries).
-
-## Isolation
-
-- For deep passes, delegate to [code-review-agent](@.cursor/agents/code-review-agent.md) and fold its summary into your final note.

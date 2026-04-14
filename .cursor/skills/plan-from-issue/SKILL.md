@@ -9,7 +9,7 @@ disable-model-invocation: true
 ## When to use
 
 - You have (or will create) a GitHub issue and need a concrete plan before coding.
-- Use with [AGENTS.md](@AGENTS.md) workflow (issue-first, Plan Mode for larger work).
+- Use with [AGENTS.md](@AGENTS.md): turn on [Plan mode](https://cursor.com/docs/agent/plan-mode), then run this skill.
 
 ## Inputs
 
@@ -29,4 +29,4 @@ disable-model-invocation: true
 - Issue template: [.github/ISSUE_TEMPLATE/feature-bug-chore.yml](@.github/ISSUE_TEMPLATE/feature-bug-chore.yml)
 - Architecture: [.cursor/rules/architecture.mdc](@.cursor/rules/architecture.mdc)
 
-After the plan is accepted, use **implement-from-plan** to execute it.
+After the plan is accepted, the **Build** step is **only** via **builder-agent** (see [.cursor/agents/builder-agent.md](@.cursor/agents/builder-agent.md)): hand off issue, plan, and branch naming as described there.

@@ -6,11 +6,14 @@ This document maps the project’s **rules**, **skills**, **subagents**, and **h
 
 | Rule | Detail |
 |------|--------|
+| Work location | **Automated agents** work only on a **feature branch**; commit and **push only that branch**. |
 | PR base | All **agent-created** pull requests must use **`gh pr create --base dev`** (or equivalent). |
-| `main` | **Forbidden** for agent work: no PRs to `main`, no pushes to `main`, no agent-driven merges into `main`. |
+| `dev` / `main` | **Forbidden** for direct agent integration: no pushes to **`dev`** or **`main`**, no agent merges into those branches, no committing on **`dev`**/**`main`**. Humans merge PRs to `dev` and promote `dev` → `main`. |
 | Promotion | **`dev` → `main`** is **human-only**, guided by `/release-readiness` after QA on `dev`. |
 
-Hooks enforce part of this via `beforeShellExecution` (see hook wiring below).
+**Cloud agent** and **subagents** follow the same rules as above (see [Cloud agent](https://cursor.com/docs/cloud-agent) in [cursor_sources.md](cursor_sources.md)).
+
+Hooks enforce part of this via `beforeShellExecution` (see hook wiring below). A bare **`git push`** while checked out on **`dev`** cannot be reliably detected from the command string alone; **AGENTS.md** and **builder-agent** instructions rely on policy compliance for that case.
 
 ---
 
@@ -26,9 +29,8 @@ flowchart LR
   end
   subgraph skills [Agent_skills]
     skPlan[plan_from_issue]
-    skImpl[implement_from_plan]
-    skCode[code_review]
-    skUi[ui_review]
+    skCode[code_review_skill]
+    skUi[ui_review_skill]
     skFix[fix_from_review]
     skRel[release_readiness]
   end
@@ -41,25 +43,23 @@ flowchart LR
     hj[hooks_json]
   end
   issue[GitHub_issue] --> skPlan
-  skPlan --> skImpl
-  skImpl --> agBuild
+  skPlan --> agBuild
   agBuild --> agCode
-  agBuild --> agUi
-  agCode --> skFix
-  agUi --> skFix
-  skFix --> skRel
+  agCode --> agUi
+  agUi -.->|if_BLOCKING| skFix
+  skFix -.-> agBuild
   agentsMd -.-> skPlan
   rulesGit -.-> agBuild
-  rulesArch -.-> skImpl
-  rulesUi -.-> skImpl
+  rulesArch -.-> agBuild
+  rulesUi -.-> agBuild
   hj -.-> skPlan
   hj -.-> agCode
 ```
 
-- **AGENTS.md** orchestrates order of operations and points to skills and rules.
+- **AGENTS.md** defines the single path: Plan skill → **builder-agent** → **code-review-agent** → **ui-review-agent** (or UI N/A) → **fix-from-review** + builder loop as needed → human merge to `dev`.
 - **Rules** constrain architecture, UI, and git/branch behavior.
-- **Skills** are explicit procedures (invoked with `/` in Agent when `disable-model-invocation: true`).
-- **Subagents** isolate heavy implementation or review passes; review agents emit **`[[BLOCKING]]`** when appropriate.
+- **Skills** are explicit procedures (invoked with `/` in Agent when `disable-model-invocation: true`). Review **skills** mirror checklists; the **standard** review step uses **subagents** per AGENTS.md.
+- **Subagents** isolate implementation and review passes; review agents emit **`[[BLOCKING]]`** when appropriate.
 - **Hooks** implement lightweight automation on Cursor lifecycle events (not a full CI replacement).
 
 ---
@@ -86,9 +86,9 @@ Official hook reference: [Hooks](https://cursor.com/docs/hooks) (also listed in 
 |-----------------|-------------------------|--------|----------------|
 | pre-implementation-check | `beforeSubmitPrompt` | [pre-implementation-check.mjs](../.cursor/hooks/pre-implementation-check.mjs) | Fail-open unless `CURSOR_STRICT_PLAN_GATE=1`; then block “implementation-like” prompts without `#issue` or plan marker. |
 | post-implementation-check | `afterFileEdit` + `stop` | [after-file-edit-dirty.mjs](../.cursor/hooks/after-file-edit-dirty.mjs), [stop-post-build.mjs](../.cursor/hooks/stop-post-build.mjs) | After `Write` under `src/`, create `.cursor/hooks/.dirty` (gitignored). On agent `stop` + `completed`, run `npm run build` if dirty was set. |
-| pr-open-trigger (+ branch policy) | `beforeShellExecution` | [shell-policy.mjs](../.cursor/hooks/shell-policy.mjs) | Deny `gh pr create` without `--base dev` or with `--base main`; deny `git push` touching `main`; allow with reminder to run reviews after valid `gh pr create`. |
+| pr-open-trigger (+ branch policy) | `beforeShellExecution` | [shell-policy.mjs](../.cursor/hooks/shell-policy.mjs) | Deny `gh pr create` without `--base dev` or with `--base main`; deny `git push` targeting **`main`** or **`dev`** as destination; on valid `gh pr create`, remind to run **code-review-agent** then **ui-review-agent** (UI N/A rule applies). |
 | review-gate | `subagentStart` | [subagent-start-review-gate.mjs](../.cursor/hooks/subagent-start-review-gate.mjs) | v1: allow all; logs type/task to stderr. |
-| review-fix-loop | `subagentStop` | [subagent-stop-review-loop.mjs](../.cursor/hooks/subagent-stop-review-loop.mjs) | If `summary` contains `[[BLOCKING]]`, emit `followup_message` to continue with `/fix-from-review`. |
+| review-fix-loop | `subagentStop` | [subagent-stop-review-loop.mjs](../.cursor/hooks/subagent-stop-review-loop.mjs) | If `summary` contains `[[BLOCKING]]`, emit `followup_message` for `/fix-from-review` and **builder-agent**, then re-run review subagents. |
 
 **`stop` / `subagentStop` follow-ups** respect per-hook `loop_limit` (see `hooks.json`; default Cursor cap applies).
 
