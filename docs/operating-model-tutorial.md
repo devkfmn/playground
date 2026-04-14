@@ -4,7 +4,7 @@ One **prompt per step** for the flow in [AGENTS.md](../AGENTS.md): **Issue → P
 
 Replace `#42` with your issue number everywhere it appears.
 
-Skills use **`/`** in Agent. If a skill does not appear, check **Cursor Settings → Rules** and confirm project skills are loaded.
+Skills use `**/`** in Agent. If a skill does not appear, check **Cursor Settings → Rules** and confirm project skills are loaded.
 
 Cursor product links are indexed in [cursor_sources.md](cursor_sources.md).
 
@@ -80,15 +80,15 @@ Delegate ui-review-agent for the PR / branch for issue #42. Follow the required 
 Fix every blocking and important finding from the latest reviews for #42. Delegate builder-agent on the same feature branch; run npm run build after edits. Then delegate code-review-agent again, then ui-review-agent (or UI N/A if no src/**/*.{js,jsx,css} changed).
 ```
 
-Repeat this step until there is no **`[[BLOCKING]]`** in the latest review outputs (or you explicitly accept the risk).
+Repeat this step until there is no `**[[BLOCKING]]**` in the latest review outputs (or you explicitly accept the risk).
 
 ---
 
 ## 6. Dev
 
-**Goal:** Merge into **`dev`** on GitHub.
+**Goal:** Merge into `**dev`** on GitHub.
 
-**You:** Merge the PR into **`dev`** in the GitHub UI (not `main`).
+**You:** Merge the PR into `**dev`** in the GitHub UI (not `main`).
 
 **Prompt (after merge, for a short record in chat):**
 
@@ -100,7 +100,7 @@ Summarize what is now on dev for #42: merged PR link, files touched, and the exa
 
 ## 7. Human test
 
-**Goal:** Validate behavior on **`dev`** (deployed, preview, or local checkout of `dev`).
+**Goal:** Validate behavior on `**dev`** (deployed, preview, or local checkout of `dev`).
 
 **Prompt:**
 
@@ -112,7 +112,7 @@ Give me a numbered manual test checklist for issue #42 derived only from its acc
 
 ## 8. Main
 
-**Goal:** Human promotion **`dev` → `main`** only.
+**Goal:** Human promotion `**dev` → `main`** only.
 
 **Prompt:**
 
@@ -122,20 +122,20 @@ Give me a numbered manual test checklist for issue #42 derived only from its acc
 We are about to promote dev to main. Walk through the release-readiness checklist from AGENTS.md and .cursor/rules/git-workflow.mdc; list anything still missing before merge (CI, QA, etc.). Do not merge; I will do the dev-to-main merge in GitHub.
 ```
 
-**You:** Perform the actual **`dev` → `main`** merge or release PR in GitHub.
+**You:** Perform the actual `**dev` → `main`** merge or release PR in GitHub.
 
 ---
 
 ## End-to-end (same prompts in order)
 
-1. Issue — prompt from §1  
-2. Plan — prompt from §2  
-3. Build — prompt from §3  
-4. Auto review — prompts from §4 (code always; UI only when applicable)  
-5. Fix loop — prompt from §5 (repeat until clean)  
-6. Dev — merge in GitHub, then prompt from §6  
-7. Human test — prompt from §7  
-8. Main — prompt from §8, then merge in GitHub  
+1. Issue — prompt from §1
+2. Plan — prompt from §2
+3. Build — prompt from §3
+4. Auto review — prompts from §4 (code always; UI only when applicable)
+5. Fix loop — prompt from §5 (repeat until clean)
+6. Dev — merge in GitHub, then prompt from §6
+7. Human test — prompt from §7
+8. Main — prompt from §8, then merge in GitHub
 
 ---
 
@@ -143,6 +143,6 @@ We are about to promote dev to main. Walk through the release-readiness checklis
 
 - [AGENTS.md](../AGENTS.md) — orchestration and branch policy  
 - [cursor-operating-model-architecture.md](cursor-operating-model-architecture.md) — components and hooks  
-- [cursor-system-overview.md](cursor-system-overview.md) — rules, skills, subagents, hooks list  
+- [cursor-system-overview.md](cursor-system-overview.md) — rules, skills, subagents, hooks list
 
-If `CURSOR_STRICT_PLAN_GATE=1` is set, keep **`#42`** (or your issue number) in prompts that start implementation so the plan gate hook allows them.
+If `CURSOR_STRICT_PLAN_GATE=1` is set, keep `**#42`** (or your issue number) in prompts that start implementation so the plan gate hook allows them.

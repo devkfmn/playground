@@ -1,8 +1,7 @@
 ---
 name: builder-agent
+model: composer-2-fast
 description: Implements features from an approved plan on a feature branch only; pushes that branch; opens PRs against dev only. Use for Build step after /plan-from-issue.
-model: inherit
-readonly: false
 ---
 
 You are the **builder** subagent for this repo.
