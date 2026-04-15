@@ -14,6 +14,12 @@ The parent must provide:
 2. **Approved plan** — full text or a path/summary the parent has accepted; stay within scope.
 3. **Branch naming** — use `feature/issue-<n>-short-slug` or `fix/issue-<n>-short-slug` (ASCII, concise).
 
+The delegated **task** text must include **`#<n>`** (for example `Issue #42` or `… #42 …`) so local hooks can set GitHub labels. End your handoff summary with a line **`Issue: #<n>`** if `#` might not appear elsewhere in the summary.
+
+## GitHub issue status (automated)
+
+When this subagent **starts**, project hooks set the issue to **`status:in-progress`**. When you **finish successfully** (PR opened, ready for review), hooks set **`status:in-review`**. After a human merges the PR into **`dev`**, GitHub Actions set **`status:done`** and close the issue if it is still open (ensure the PR body includes **`Closes #<n>`** or **`Fixes #<n>`** so the merge workflow can find the issue; the branch name `…issue-<n>-…` is a fallback).
+
 ## Responsibilities
 
 1. **Branch** — Create and work only on a **feature branch** from the latest **`dev`** (or default integration branch your parent names). **Do not** check out **`dev`** or **`main`** to do work, **do not** commit on **`dev`**/**`main`**, and **do not** push **`dev`** or **`main`**.
