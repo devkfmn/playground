@@ -97,7 +97,7 @@ Only one `status:*` label should exist at a time. Hooks move issues from `todo` 
 |------|--------|
 | Agent instructions | [AGENTS.md](../AGENTS.md) |
 | Project rules | `.cursor/rules/operating-model-build.mdc`, `.cursor/rules/ui-system.mdc`, `.cursor/rules/architecture.mdc`, `.cursor/rules/git-workflow.mdc` |
-| Skills | `.cursor/skills/plan-from-issue/`, `build-and-run/`, `review/`, `github-publish/`, `sync-dev/` (each contains `SKILL.md`) |
+| Skills | `.cursor/skills/create-issue/`, `plan-from-issue/`, `build-and-run/`, `review/`, `github-publish/`, `sync-dev/` (each contains `SKILL.md`) |
 | Subagents | `.cursor/agents/coding-clanker.md`, `review-clanker.md`, `github-clanker.md` |
 | Hooks | `.cursor/hooks.json`, `shell-policy.mjs`, `subagent-start-review-gate.mjs`, `subagent-stop-review-loop.mjs`, `issue-status-labels.mjs` |
 | Architecture map | [docs/cursor-operating-model-architecture.md](cursor-operating-model-architecture.md) |
@@ -107,13 +107,14 @@ Only one `status:*` label should exist at a time. Hooks move issues from `todo` 
 ### Notes
 
 - No `lint`, `typecheck`, or `test` script is installed yet.
-- The visible human workflow is: GitHub issue outside Cursor, `/plan-from-issue #n`, the accepted plan’s Build button, `/build-and-run`, `/review`, `/github-publish #n`, then merge on GitHub and `/sync-dev` locally.
+- The visible human workflow is: GitHub issue (`/create-issue feature|bug|chore …` or the web UI), `/plan-from-issue #n`, the accepted plan’s Build button, `/build-and-run`, `/review`, `/github-publish #n`, then merge on GitHub and `/sync-dev` locally.
 - `coding-clanker` owns implementation, `review-clanker` is report-only, and `github-clanker` owns commit, push, and PR publication. If cloud execution is introduced later, document auth, secrets, network, and testability prerequisites before relying on it.
 
 ## Change Log
 
 ### 2026-04-19
 
+- Documented **`/create-issue`** (slash skill + `gh issue create`) in [operating-model-tutorial.md](operating-model-tutorial.md), [cursor-system-overview.md](cursor-system-overview.md), and [.cursor/rules/git-workflow.mdc](../.cursor/rules/git-workflow.mdc); aligned **`plan-from-issue`** references and status-label owner text in [cursor-operating-model-architecture.md](cursor-operating-model-architecture.md).
 - Operating model: always-on Build delegation rule, `/build-and-run` steers to Cursor Browser, merged **`/review`** + **`review-clanker`**, and github-clanker hook sets **`status:ready-to-merge`** after publish.
 - Issue status labels: added **`status:ready-to-merge`** after **`github-clanker`**; hardened hook **`gh`** invocation (Windows `gh.exe` resolution, git top-level `cwd`, richer failure logs).
 - Documented **Cursor hooks reliability (Option A)**: trusted workspace, workspace root, Agent + Task path, Hooks settings UI and output channel, smoke test, and edge cases (`CURSOR_CODE_REMOTE`, `node` PATH, hook timeouts).

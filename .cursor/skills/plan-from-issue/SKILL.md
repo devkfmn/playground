@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 ## When to use
 
-- A GitHub issue already exists and contains the implementation details.
+- A GitHub issue already exists and contains the implementation details. If there is no issue yet, create one with **`/create-issue`** (see [.cursor/skills/create-issue/SKILL.md](@.cursor/skills/create-issue/SKILL.md)) or the web UI using the same template.
 - The human wants planning to be as short as possible: **`/plan-from-issue #123`** and nothing more.
 - Use with [AGENTS.md](@AGENTS.md): turn on [Plan mode](https://cursor.com/docs/agent/plan-mode), then run this skill.
 
@@ -34,6 +34,7 @@ disable-model-invocation: true
 
 ## References
 
+- Creating issues: [.cursor/skills/create-issue/SKILL.md](@.cursor/skills/create-issue/SKILL.md)
 - Issue template: [.github/ISSUE_TEMPLATE/feature-bug-chore.yml](@.github/ISSUE_TEMPLATE/feature-bug-chore.yml)
 - Architecture: [.cursor/rules/architecture.mdc](@.cursor/rules/architecture.mdc)
 

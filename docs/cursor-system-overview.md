@@ -23,9 +23,9 @@ Use it to understand how the repo maps Cursor product concepts to local files. T
 
 ## Repo operating model at a glance
 
-Issue outside Cursor → `/plan-from-issue #n` → `/implement-plan #n` → `/build-and-run [app]` → `/review` → `/github-publish #n` → Dev (merge on GitHub) → `/sync-dev` → Human integration test → Main
+Issue (GitHub UI or `/create-issue`) → `/plan-from-issue #n` → `/implement-plan #n` → `/build-and-run [app]` → `/review` → `/github-publish #n` → Dev (merge on GitHub) → `/sync-dev` → Human integration test → Main
 
-- **Issue** starts as `status:todo`; when `**coding-clanker`** starts (from `**/implement-plan**`), hooks set `status:in-progress`, then `status:in-review` when it finishes successfully; after `**/github-publish**` completes successfully, hooks set `status:ready-to-merge` until merge to `dev`
+- **Issue** starts as `status:todo` (issue form on GitHub or **`/create-issue`**); when `**coding-clanker`** starts (from `**/implement-plan**`), hooks set `status:in-progress`, then `status:in-review` when it finishes successfully; after `**/github-publish**` completes successfully, hooks set `status:ready-to-merge` until merge to `dev`
 - **Implementation** is `**/implement-plan #n`** → **Task** → `coding-clanker`. Cursor’s Plan **Build** button (if used) is only steerable via rules, not hard-bound from the repo (see [cursor-operating-model-architecture.md](cursor-operating-model-architecture.md))
 - `**/build-and-run`** installs if needed, runs `npm run build`, starts the app, and opens the local URL with Cursor’s **Browser** tool (in-IDE)
 - `**/review`** delegates `review-clanker` (code + UI; `**UI: N/A**` when no UI files changed)
