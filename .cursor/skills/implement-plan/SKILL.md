@@ -15,7 +15,7 @@ Use this skill only to delegate **[coding-clanker](@.cursor/agents/coding-clanke
 ## When to use
 
 - An **accepted plan** exists (saved in the workspace or clearly summarized in the thread).
-- The GitHub issue **`#n`** is the source of truth for scope and acceptance criteria.
+- The GitHub issue **`#n`** is the source of truth for scope and acceptance criteria. If no issue exists yet, create one with **`/create-issue`** (see [.cursor/skills/create-issue/SKILL.md](@.cursor/skills/create-issue/SKILL.md)) or the web UI before planning.
 - The human runs **`/implement-plan #n`** (or equivalent wording with the issue number).
 
 ## Inputs

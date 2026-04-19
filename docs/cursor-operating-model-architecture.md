@@ -15,7 +15,7 @@ Official Cursor docs used for this repo:
 Repo decisions derived from those docs:
 
 - Use **Plan Mode** for complex work and save accepted plans into the workspace.
-- Keep the human-visible surface minimal: GitHub issue, `**/plan-from-issue #n`**, the accepted plan as context, `**/implement-plan #n`**, `**/build-and-run**`, `**/review**`, `**/github-publish #n**`, and `**/sync-dev**` after merge to `**dev**` on GitHub.
+- Keep the human-visible surface minimal: GitHub issue (**`/create-issue`** or the web UI), `**/plan-from-issue #n`**, the accepted plan as context, `**/implement-plan #n`**, `**/build-and-run**`, `**/review**`, `**/github-publish #n**`, and `**/sync-dev**` after merge to `**dev**` on GitHub.
 - Use **subagents** only where context isolation is clearly worth it: `coding-clanker`, `review-clanker`, and `github-clanker`.
 - Keep **hooks** minimal: Git safety plus coding-clanker and github-clanker issue label automation.
 - Treat automation as **local-first**. If cloud execution is introduced later, document auth, secrets, network, and testability prerequisites first.
@@ -46,7 +46,7 @@ Hooks enforce part of this via `beforeShellExecution` and coding-clanker label h
 
 ```mermaid
 flowchart LR
-  issue["Issue outside Cursor"] --> plan["/plan-from-issue #n"]
+  issueStart["Issue (UI or /create-issue)"] --> plan["/plan-from-issue #n"]
   plan --> impl["/implement-plan #n"]
   impl --> coding[CodingClanker]
   coding --> run["/build-and-run [app]"]
@@ -71,7 +71,7 @@ Only one issue status label should exist at a time:
 
 | Label                   | Meaning                                                                                       | Owner                        |
 | ----------------------- | --------------------------------------------------------------------------------------------- | ---------------------------- |
-| `status:todo`           | Issue exists and `**coding-clanker**` has not started yet (`**/implement-plan**` not run yet) | Issue template               |
+| `status:todo`           | Issue exists and `**coding-clanker**` has not started yet (`**/implement-plan**` not run yet) | Issue template or **`/create-issue`** |
 | `status:in-progress`    | `coding-clanker` is actively building or reworking on a feature branch                        | Coding-clanker start hook    |
 | `status:in-review`      | Local implementation is ready for `/build-and-run` and `/review` (before `/github-publish`)   | Coding-clanker stop hook     |
 | `status:ready-to-merge` | PR into `dev` is pushed and open/updated; awaiting human merge                                | Github-clanker stop hook     |
@@ -111,7 +111,7 @@ Enforcement stance:
 | Workflow contract         | [AGENTS.md](../AGENTS.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | Git/PR rule               | [.cursor/rules/git-workflow.mdc](../.cursor/rules/git-workflow.mdc)                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Architecture/UI rules     | [.cursor/rules/architecture.mdc](../.cursor/rules/architecture.mdc), [.cursor/rules/ui-system.mdc](../.cursor/rules/ui-system.mdc)                                                                                                                                                                                                                                                                                                                                                               |
-| Visible skills            | [.cursor/skills/plan-from-issue/SKILL.md](../.cursor/skills/plan-from-issue/SKILL.md), [.cursor/skills/implement-plan/SKILL.md](../.cursor/skills/implement-plan/SKILL.md), [.cursor/skills/build-and-run/SKILL.md](../.cursor/skills/build-and-run/SKILL.md), [.cursor/skills/review/SKILL.md](../.cursor/skills/review/SKILL.md), [.cursor/skills/github-publish/SKILL.md](../.cursor/skills/github-publish/SKILL.md), [.cursor/skills/sync-dev/SKILL.md](../.cursor/skills/sync-dev/SKILL.md) |
+| Visible skills            | [.cursor/skills/create-issue/SKILL.md](../.cursor/skills/create-issue/SKILL.md), [.cursor/skills/plan-from-issue/SKILL.md](../.cursor/skills/plan-from-issue/SKILL.md), [.cursor/skills/implement-plan/SKILL.md](../.cursor/skills/implement-plan/SKILL.md), [.cursor/skills/build-and-run/SKILL.md](../.cursor/skills/build-and-run/SKILL.md), [.cursor/skills/review/SKILL.md](../.cursor/skills/review/SKILL.md), [.cursor/skills/github-publish/SKILL.md](../.cursor/skills/github-publish/SKILL.md), [.cursor/skills/sync-dev/SKILL.md](../.cursor/skills/sync-dev/SKILL.md) |
 | Subagents                 | [.cursor/agents/*.md](../.cursor/agents/)                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | Local hooks               | [.cursor/hooks/*.mjs](../.cursor/hooks/) + [.cursor/hooks.json](../.cursor/hooks.json)                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Merge-to-`dev` automation | [.github/workflows/issue-status-on-pr-merge.yml](../.github/workflows/issue-status-on-pr-merge.yml), [.github/workflows/delete-feature-branch-on-merge.yml](../.github/workflows/delete-feature-branch-on-merge.yml)                                                                                                                                                                                                                                                                             |
