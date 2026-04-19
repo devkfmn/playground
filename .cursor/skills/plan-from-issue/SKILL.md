@@ -30,10 +30,11 @@ disable-model-invocation: true
    - `Build owner: coding-clanker`
    - `Build note: Click Build on this accepted plan.`
    - `Build execution: The agent handling Build must delegate via Task → coding-clanker (not inline edits); task text must include #<n>.`
+   - Alternatively the human can run **`/implement-plan #<n>`** so the chat agent delegates **`coding-clanker`** without using the Build button.
 
 ## References
 
 - Issue template: [.github/ISSUE_TEMPLATE/feature-bug-chore.yml](@.github/ISSUE_TEMPLATE/feature-bug-chore.yml)
 - Architecture: [.cursor/rules/architecture.mdc](@.cursor/rules/architecture.mdc)
 
-After the plan is accepted, the human should click **Build** on the accepted plan. There is no separate build slash command. This repo steers that Build step toward **coding-clanker** (see [.cursor/agents/coding-clanker.md](@.cursor/agents/coding-clanker.md)), so the plan must carry the issue number and suggested branch naming clearly. `coding-clanker` owns implementation on the feature branch; `github-clanker` later handles commit, push, and PR publication once review is ready.
+After the plan is accepted, the human should click **Build** on the accepted plan, or run **`/implement-plan #n`** (see [.cursor/skills/implement-plan/SKILL.md](@.cursor/skills/implement-plan/SKILL.md)) so the handling agent delegates **Task → coding-clanker**. This repo steers the Build step toward **coding-clanker** (see [.cursor/agents/coding-clanker.md](@.cursor/agents/coding-clanker.md)), but that routing is best-effort, so the plan must carry the issue number and suggested branch naming clearly. `coding-clanker` owns implementation on the feature branch; `github-clanker` later handles commit, push, and PR publication once review is ready.
