@@ -1,12 +1,12 @@
 # Project Instructions
 
-Operating flow: **Issue on GitHub → `/plan-from-issue #n` → Plan Build button → `coding-clanker` → `/build-and-run [app]` → `/code-review` → `/ui-review` → `/github-publish #n` → merge to `dev` → human integration test → merge to `main`.** The canonical workflow contract lives here. Wiring and enforcement details live in [docs/cursor-operating-model-architecture.md](docs/cursor-operating-model-architecture.md). Command examples live in [docs/operating-model-tutorial.md](docs/operating-model-tutorial.md). Official Cursor product references are indexed in [docs/cursor_sources.md](docs/cursor_sources.md).
+Operating flow: **Issue on GitHub → `/plan-from-issue #n` → Plan Build button → `coding-clanker` → `/build-and-run [app]` → `/review` → `/github-publish #n` → merge to `dev` → human integration test → merge to `main`.** The canonical workflow contract lives here. Wiring and enforcement details live in [docs/cursor-operating-model-architecture.md](docs/cursor-operating-model-architecture.md). Command examples live in [docs/operating-model-tutorial.md](docs/operating-model-tutorial.md). Official Cursor product references are indexed in [docs/cursor_sources.md](docs/cursor_sources.md).
 
 ## Source-aligned principles
 
 - Use [Plan Mode](https://cursor.com/docs/agent/plan-mode) for complex work. Every behavioral change starts from an accepted plan saved into the workspace.
 - Keep the human surface minimal: GitHub issue outside Cursor, then only the Build button and the repo’s slash skills.
-- Use [subagents](https://cursor.com/docs/subagents) only where context isolation is worth it: `coding-clanker`, `code-review-clanker`, `ui-review-clanker`, and `github-clanker`.
+- Use [subagents](https://cursor.com/docs/subagents) only where context isolation is worth it: `coding-clanker`, `review-clanker`, and `github-clanker`.
 - Use [rules](https://cursor.com/docs/rules) for persistent guidance and a **small** [hook](https://cursor.com/docs/hooks) set for Git safety and issue labels.
 - Treat automation as local-first. If [cloud agent](https://cursor.com/docs/cloud-agent) execution is ever allowed, document auth, secrets, network, and testability prerequisites first.
 - Cursor does **not** expose a repo-local way to hard-bind the Plan Build button to a named subagent. This repo steers Build toward `coding-clanker`, but that routing is best-effort rather than a hard product guarantee.
@@ -36,6 +36,7 @@ Transition owners:
 - Issue template applies **`status:todo`**.
 - Coding-clanker start hook applies **`status:in-progress`** and removes the other status labels.
 - Coding-clanker stop hook applies **`status:in-review`** and removes the other status labels.
+- Github-clanker successful completion hook applies **`status:in-review`** and removes the other status labels (re-asserts PR review state).
 - Merge-to-`dev` GitHub Action applies **`status:done`**, removes the other status labels, closes the issue, and deletes the merged same-repo feature branch.
 
 ## PR body contract
@@ -60,25 +61,24 @@ Closes #n
 
 - **Accepted plan** — plan approved in Plan Mode and saved into the workspace.
 - **`[[BLOCKING]]`** — exact token that review agents must emit on its own line when Build, publish, or merge should not proceed.
-- **UI N/A** — parent skips `ui-review-clanker` only when no file matching `src/**/*.{js,jsx,css}` changed.
+- **UI N/A** — inside **`review-clanker`** output: the **UI findings** section is exactly **`UI: N/A`** when no file matching `src/**/*.{js,jsx,css}` changed.
 
 ## Single path (how to work)
 
 1. **Issue** — Create and maintain the GitHub issue outside Cursor using [.github/ISSUE_TEMPLATE/feature-bug-chore.yml](.github/ISSUE_TEMPLATE/feature-bug-chore.yml). Issue starts as **`status:todo`**.
 2. **Plan** — Turn on [Plan Mode](https://cursor.com/docs/agent/plan-mode) and run **`/plan-from-issue #42`**. The issue itself is the source of truth; no second issue prompt is needed. The accepted plan should carry the issue number and recommended branch naming clearly enough for Build.
 3. **Build** — Click **Build** on the accepted plan. This repo is configured so Build should route to **`coding-clanker`**. Coding clanker creates or reuses the feature branch from latest `dev`, implements locally, runs **`npm run build`**, leaves the working tree ready for review, and transitions the issue through **`status:in-progress`** and **`status:in-review`**. Coding clanker does **not** commit, push, or open or update the PR. If Cursor does not route Build correctly, retry with a manual `coding-clanker` delegation as a fallback.
-4. **Human feature review/test** — Run **`/build-and-run`** (or **`/build-and-run appname`** in a multi-app repo). That command installs dependencies if needed, runs **`npm run build`**, starts the app locally, and opens it in the Cursor browser. If feedback requires implementation changes, use the accepted plan’s **Build** step again.
-5. **Manual code review** — Run **`/code-review`**. This delegates **`code-review-clanker`**. If the result contains **`[[BLOCKING]]`**, go back to **Build**, then re-run **`/build-and-run`** and **`/code-review`**.
-6. **Manual UI review** — Run **`/ui-review`** when UI-relevant files changed under `src/`; otherwise treat it as **UI N/A**. This delegates **`ui-review-clanker`** only when needed. If the result contains **`[[BLOCKING]]`**, go back to **Build**, then re-run **`/build-and-run`**, **`/code-review`**, and **`/ui-review`**.
-7. **GitHub publish** — Run **`/github-publish #42`** only after local review is ready. This delegates **`github-clanker`** to commit the current feature branch, push only that branch, and create or update one PR into **`dev`**.
-8. **Dev** — **Human** merges the PR into **`dev`** on GitHub. On merge, automation sets issue **`status:done`**, closes linked issues, and deletes the merged feature branch (same-repo branches only).
-9. **Human integration test** — Validate acceptance criteria on **`dev`** (deployed, preview, or local checkout). If this fails after merge, open a follow-up issue or reopen the original issue.
-10. **Main** — **Human** promotes **`dev` → `main`** only. Issue state does not change here.
+4. **Human feature review/test** — Run **`/build-and-run`** (or **`/build-and-run appname`** in a multi-app repo). That command installs dependencies if needed, runs **`npm run build`**, starts the app locally, and opens the app URL with Cursor’s **Browser** tool (in-IDE), not the OS default browser. If feedback requires implementation changes, use the accepted plan’s **Build** step again.
+5. **Manual review** — Run **`/review`**. This delegates **`review-clanker`** (combined code and UI report). If the result contains **`[[BLOCKING]]`**, go back to **Build**, then re-run **`/build-and-run`** and **`/review`**.
+6. **GitHub publish** — Run **`/github-publish #42`** only after local review is ready. This delegates **`github-clanker`** to commit the current feature branch, push only that branch, and create or update one PR into **`dev`**.
+7. **Dev** — **Human** merges the PR into **`dev`** on GitHub. On merge, automation sets issue **`status:done`**, closes linked issues, and deletes the merged feature branch (same-repo branches only).
+8. **Human integration test** — Validate acceptance criteria on **`dev`** (deployed, preview, or local checkout). If this fails after merge, open a follow-up issue or reopen the original issue.
+9. **Main** — **Human** promotes **`dev` → `main`** only. Issue state does not change here.
 
 ## Rules and automation
 
-- **Rules:** [.cursor/rules/git-workflow.mdc](.cursor/rules/git-workflow.mdc), [.cursor/rules/architecture.mdc](.cursor/rules/architecture.mdc), [.cursor/rules/ui-system.mdc](.cursor/rules/ui-system.mdc) when applicable.
-- **Hooks:** [.cursor/hooks.json](.cursor/hooks.json) — shell policy for PR base and risky `git push`, denial of **`git worktree add`**, coding-clanker start label transitions, and coding-clanker stop or `[[BLOCKING]]` follow-up nudges. See the architecture doc for the wiring table.
+- **Rules:** [.cursor/rules/operating-model-build.mdc](.cursor/rules/operating-model-build.mdc), [.cursor/rules/git-workflow.mdc](.cursor/rules/git-workflow.mdc), [.cursor/rules/architecture.mdc](.cursor/rules/architecture.mdc), [.cursor/rules/ui-system.mdc](.cursor/rules/ui-system.mdc) when applicable.
+- **Hooks:** [.cursor/hooks.json](.cursor/hooks.json) — shell policy for PR base and risky `git push`, denial of **`git worktree add`**, coding-clanker and github-clanker issue label transitions, and `[[BLOCKING]]` follow-up nudges. See the architecture doc for the wiring table.
 - **GitHub Actions:** merge-to-`dev` workflows own **`status:done`**, issue closure, and merged branch deletion.
 - **GitHub settings:** branch protection on `dev` and `main` should require pull requests and the required checks documented in [docs/project_init.md](docs/project_init.md).
 

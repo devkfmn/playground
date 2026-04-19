@@ -38,29 +38,19 @@ If a repo later has multiple apps, use:
 /build-and-run exampleapp
 ```
 
-This command installs dependencies if needed, runs `npm run build`, starts the app, and opens it in the Cursor browser.
+This command installs dependencies if needed, runs `npm run build`, starts the app, and opens the local URL with Cursor’s **Browser** tool (in-IDE), not the OS default browser.
 
-## 5. Manual code review
-
-Run:
-
-```text
-/code-review
-```
-
-This delegates `**code-review-clanker**`.
-
-## 6. Manual UI review
+## 5. Manual review
 
 Run:
 
 ```text
-/ui-review
+/review
 ```
 
-This delegates `**ui-review-clanker**` only when UI-relevant files changed. Otherwise the result should be **UI N/A**.
+This delegates `**review-clanker**` (combined code and UI). When no `src/**/*.{js,jsx,css}` files changed, the report’s UI section is `**UI: N/A**`.
 
-## 7. GitHub publish
+## 6. GitHub publish
 
 Run:
 
@@ -70,7 +60,7 @@ Run:
 
 This delegates `**github-clanker**` to commit the reviewed branch, push it, and create or update one PR into `dev`.
 
-## 8. Dev
+## 7. Dev
 
 Merge the PR into `dev` in GitHub.
 
@@ -80,25 +70,24 @@ Expected post-merge automation:
 - issue closes
 - merged same-repo feature branch is deleted
 
-## 9. Human integration test
+## 8. Human integration test
 
 Validate behavior on `dev` after merge.
 
 If integration fails after merge, open a follow-up issue or reopen the original issue.
 
-## 10. Main
+## 9. Main
 
 Merge `dev` to `main` in GitHub as a human-only step.
 
 ## Rework loop
 
-If `**/code-review**` or `**/ui-review**` returns `**[[BLOCKING]]**`:
+If `**/review**` returns `**[[BLOCKING]]**`:
 
 1. Click **Build** on the accepted plan again.
 2. Re-run `**/build-and-run`**.
-3. Re-run `**/code-review**`.
-4. Re-run `**/ui-review**` when applicable.
-5. Use `**/github-publish #42**` only after the branch is ready.
+3. Re-run `**/review`**.
+4. Use `**/github-publish #42`** only after the branch is ready.
 
 ## See also
 

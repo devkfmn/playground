@@ -1,5 +1,5 @@
 /**
- * review-gate — v1 allows all subagents; optional stderr log.
+ * review-gate — validates coding-clanker start when applicable.
  * When coding-clanker starts, set GitHub issue label status:in-progress (see issue-status-labels.mjs).
  */
 import fs from 'node:fs'

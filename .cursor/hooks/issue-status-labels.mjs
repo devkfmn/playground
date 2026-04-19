@@ -1,5 +1,5 @@
 /**
- * GitHub issue status labels for coding-clanker lifecycle (hooks + shared helpers).
+ * GitHub issue status labels for coding-clanker and github-clanker (hooks + shared helpers).
  * Fail-open: never throws; logs to stderr on recoverable gh failures.
  */
 import { execSync, spawnSync } from 'node:child_process'
@@ -90,6 +90,16 @@ export function validateCodingClankerIssueContext(payload) {
   return { ok: true, issue, repo }
 }
 
+export function isGithubClankerSubagent(payload) {
+  const typ = String(payload.subagent_type || '')
+  if (typ === 'github-clanker' || typ === 'github_clanker') return true
+  const task = String(payload.task || '')
+  if (/\bgithub-clanker\b/i.test(task)) return true
+  const desc = String(payload.description || '')
+  if (/github/i.test(desc) && /clanker/i.test(desc) && /publish/i.test(desc)) return true
+  return false
+}
+
 /**
  * subagentStart: transition to status:in-progress when coding-clanker starts.
  */
@@ -134,6 +144,31 @@ export function applyCodingClankerStopLabel(payload) {
   const r = ghIssueEdit(repo, issue, ['--add-label', STATUS.inReview])
   if (r.status !== 0) {
     log('gh issue edit in-review failed', r.status)
+    return { ok: false, reason: 'gh_label_update_failed', issue, repo }
+  }
+  return { ok: true, issue, repo }
+}
+
+/**
+ * subagentStop: transition to status:in-review when github-clanker completes successfully (PR published / ready).
+ */
+export function applyGithubClankerStopLabel(payload) {
+  if (!isGithubClankerSubagent(payload)) return { ok: true, skipped: true }
+  if (payload.status !== 'completed') return { ok: true, skipped: true }
+  const issue = extractIssueNumber(payload.task, payload.summary, payload.description)
+  if (!issue) {
+    log('skip github in-review: no #issue in task/summary/description')
+    return { ok: false, reason: 'missing_issue' }
+  }
+  const repo = getRepoSlug()
+  if (!repo) {
+    log('skip github in-review: could not resolve repo from origin')
+    return { ok: false, reason: 'missing_repo', issue }
+  }
+  removeStatusLabels(repo, issue, STATUS.inReview)
+  const r = ghIssueEdit(repo, issue, ['--add-label', STATUS.inReview])
+  if (r.status !== 0) {
+    log('gh issue edit in-review (github-clanker) failed', r.status)
     return { ok: false, reason: 'gh_label_update_failed', issue, repo }
   }
   return { ok: true, issue, repo }

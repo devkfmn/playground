@@ -29,6 +29,7 @@ disable-model-invocation: true
    - `Suggested branch: feature/issue-<n>-short-slug`
    - `Build owner: coding-clanker`
    - `Build note: Click Build on this accepted plan.`
+   - `Build execution: The agent handling Build must delegate via Task → coding-clanker (not inline edits); task text must include #<n>.`
 
 ## References
 

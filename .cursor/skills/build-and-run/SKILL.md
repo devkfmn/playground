@@ -22,10 +22,12 @@ Use this skill to handle local feature review or testing after Build.
 3. Install dependencies if needed.
 4. Run **`npm run build`** for the target app.
 5. Start **`npm run dev`** for the target app.
-6. Open the local app URL in the Cursor browser once the dev server is ready.
+6. Once the dev server is ready, open the local app URL using Cursor’s **Browser** automation (navigate to `http://localhost:<port>`). The Browser tool runs inside Cursor (pane or window); see [Cursor Browser docs](https://cursor.com/docs/agent/browser).
 7. Report the chosen app and local URL back to the user.
 
 ## Notes
 
 - Prefer reusing an already healthy matching dev server instead of starting a duplicate one.
 - In this repository today, there is one Vite app at the repo root, so plain **`/build-and-run`** should target the root app.
+- **Do not** open localhost with OS default-browser commands (`start http://…` on Windows, `open http://…` on macOS, `xdg-open`, etc.); those launch an external browser.
+- If Browser tools are not available in this session, tell the user to open **Command Palette → “Simple Browser: Show”**, paste the local URL, and leave the dev server running.

@@ -32,7 +32,7 @@ When this subagent **starts**, project hooks set the issue to **`status:in-progr
 
 ## After local build is ready
 
-Tell the parent to run **`/build-and-run`** first, then **`/code-review`** and **`/ui-review`** manually when appropriate, and use **`/github-publish #<n>`** only when the branch is ready to publish. If you are returning during a fix pass, keep working on the **same branch**.
+Tell the parent to run **`/build-and-run`** first, then **`/review`**, and use **`/github-publish #<n>`** only when the branch is ready to publish. If you are returning during a fix pass, keep working on the **same branch**.
 
 ## Handoff back
 
