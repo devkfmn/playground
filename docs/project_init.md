@@ -25,6 +25,7 @@ Create these labels once in the repository (UI or CLI):
 - `status:todo`
 - `status:in-progress`
 - `status:in-review`
+- `status:ready-to-merge`
 - `status:done`
 
 Example:
@@ -32,11 +33,12 @@ Example:
 ```bash
 gh label create "status:todo" --color 4D8CFE --description "Issue exists and local implementation has not started."
 gh label create "status:in-progress" --color FBCA04 --description "Build / implementation in progress"
-gh label create "status:in-review" --color 1D76DB --description "Local implementation or PR is awaiting review"
+gh label create "status:in-review" --color 1D76DB --description "Local implementation ready for build-and-run and review"
+gh label create "status:ready-to-merge" --color 5319E7 --description "PR open into dev; awaiting human merge"
 gh label create "status:done" --color 0E8A16 --description "Merged to dev; issue closed"
 ```
 
-Only one `status:*` label should exist at a time. Hooks move issues from `todo` to `in-progress` to `in-review` when **coding-clanker** runs locally (`gh` must be installed and authenticated), and re-assert **`status:in-review`** when **github-clanker** completes successfully. **`github-clanker`** publishes the reviewed feature branch with a PR into `dev`. [issue-status-on-pr-merge.yml](../.github/workflows/issue-status-on-pr-merge.yml) applies `status:done`, removes the other status labels, and closes linked issues when a PR merges into `dev`.
+Only one `status:*` label should exist at a time. Hooks move issues from `todo` to `in-progress` to `in-review` when **coding-clanker** runs locally (`gh` must be installed and authenticated), then to **`status:ready-to-merge`** when **github-clanker** completes successfully. **`github-clanker`** publishes the reviewed feature branch with a PR into `dev`. [issue-status-on-pr-merge.yml](../.github/workflows/issue-status-on-pr-merge.yml) applies `status:done`, removes the other status labels, and closes linked issues when a PR merges into `dev`.
 
 ### GitHub branch protection and PR requirements
 
@@ -82,7 +84,8 @@ Only one `status:*` label should exist at a time. Hooks move issues from `todo` 
 
 ### 2026-04-19
 
-- Operating model: always-on Build delegation rule, `/build-and-run` steers to Cursor Browser, merged **`/review`** + **`review-clanker`**, and github-clanker hook re-asserts **`status:in-review`**.
+- Operating model: always-on Build delegation rule, `/build-and-run` steers to Cursor Browser, merged **`/review`** + **`review-clanker`**, and github-clanker hook sets **`status:ready-to-merge`** after publish.
+- Issue status labels: added **`status:ready-to-merge`** after **`github-clanker`**; hardened hook **`gh`** invocation (Windows `gh.exe` resolution, git top-level `cwd`, richer failure logs).
 
 ### 2026-04-18
 

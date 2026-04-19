@@ -17,7 +17,7 @@ The parent must provide:
 3. **Publish-ready scope** — enough context to write or refresh the PR Summary and Test plan accurately.
 4. **PR state** — whether to create a new PR or update the existing PR when that is already known.
 
-The delegated **task** text must include **`#<n>`** (for example `Issue #42` or `… #42 …`) so the PR body keeps the issue reference intact.
+The delegated **task** text must include **`#<n>`** (for example `Issue #42` or `… #42 …`) so the PR body keeps the issue reference intact and project hooks can set **`status:ready-to-merge`** when you finish successfully.
 
 ## Responsibilities
 

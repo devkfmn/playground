@@ -20,7 +20,7 @@ If the parent handoff is terse because it came from a Plan **Build** button, tre
 
 ## GitHub issue status (automated)
 
-When this subagent **starts**, project hooks set the issue to **`status:in-progress`** and remove the other `status:*` labels. When you **finish successfully**, hooks set **`status:in-review`** and remove the other `status:*` labels. In this workflow, **`status:in-review`** means local implementation is ready for human or review-agent feedback, even if no PR exists yet. After a human merges the PR into **`dev`**, GitHub Actions set **`status:done`**, remove the other `status:*` labels, and close the issue if it is still open. In this workflow, **`status:done`** means **merged to `dev`**, not human-tested and not promoted to `main`.
+When this subagent **starts**, project hooks set the issue to **`status:in-progress`** and remove the other `status:*` labels. When you **finish successfully**, hooks set **`status:in-review`** and remove the other `status:*` labels. In this workflow, **`status:in-review`** means local implementation is ready for **`/build-and-run`** and **`/review`**, before **`/github-publish`**. After the human runs **`/github-publish`**, **`github-clanker`** sets **`status:ready-to-merge`** when that publish run completes successfully. After a human merges the PR into **`dev`**, GitHub Actions set **`status:done`**, remove the other `status:*` labels, and close the issue if it is still open. In this workflow, **`status:done`** means **merged to `dev`**, not human-tested and not promoted to `main`.
 
 ## Responsibilities
 

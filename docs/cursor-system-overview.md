@@ -14,7 +14,7 @@ Use it to understand how the repo maps Cursor product concepts to local files. T
 
 | Cursor concept                                                                   | Repo usage                                                                                              |
 | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| [Plan Mode](https://cursor.com/docs/agent/plan-mode)                             | Required for complex feature work before Build                                                          |
+| [Plan Mode](https://cursor.com/docs/agent/plan-mode)                             | Required for complex feature work before `**/implement-plan`**                                          |
 | [Subagents](https://cursor.com/docs/subagents)                                   | `coding-clanker`, `review-clanker`, `github-clanker`                                                    |
 | [Rules](https://cursor.com/docs/rules)                                           | Persistent workflow, git, architecture, and UI guidance                                                 |
 | [Hooks](https://cursor.com/docs/hooks)                                           | Minimal local safety checks for shell policy and coding-clanker / github-clanker issue-label automation |
@@ -23,10 +23,10 @@ Use it to understand how the repo maps Cursor product concepts to local files. T
 
 ## Repo operating model at a glance
 
-Issue outside Cursor → `/plan-from-issue #n` → Build button → `/build-and-run [app]` → `/review` → `/github-publish #n` → Dev (merge on GitHub) → `/sync-dev` → Human integration test → Main
+Issue outside Cursor → `/plan-from-issue #n` → `/implement-plan #n` → `/build-and-run [app]` → `/review` → `/github-publish #n` → Dev (merge on GitHub) → `/sync-dev` → Human integration test → Main
 
-- **Issue** starts as `status:todo`
-- **Build** should route through `coding-clanker`; the repo can steer this, but Cursor does not expose a hard repo-local Build-button binding
+- **Issue** starts as `status:todo`; when `**coding-clanker`** starts (from `**/implement-plan**`), hooks set `status:in-progress`, then `status:in-review` when it finishes successfully; after `**/github-publish**` completes successfully, hooks set `status:ready-to-merge` until merge to `dev`
+- **Implementation** is `**/implement-plan #n`** → **Task** → `coding-clanker`. Cursor’s Plan **Build** button (if used) is only steerable via rules, not hard-bound from the repo (see [cursor-operating-model-architecture.md](cursor-operating-model-architecture.md))
 - `**/build-and-run`** installs if needed, runs `npm run build`, starts the app, and opens the local URL with Cursor’s **Browser** tool (in-IDE)
 - `**/review`** delegates `review-clanker` (code + UI; `**UI: N/A**` when no UI files changed)
 - `**/github-publish**` delegates `github-clanker`

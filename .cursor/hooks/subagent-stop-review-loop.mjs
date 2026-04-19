@@ -1,6 +1,6 @@
 /**
  * manual-review-followup — if subagent summary contains [[BLOCKING]], nudge coding-clanker + re-review.
- * When coding-clanker or github-clanker completes successfully, set GitHub issue label status:in-review (see issue-status-labels.mjs).
+ * When coding-clanker completes successfully, set status:in-review; when github-clanker completes successfully, set status:ready-to-merge (see issue-status-labels.mjs).
  */
 import fs from 'node:fs'
 import { applyCodingClankerStopLabel, applyGithubClankerStopLabel } from './issue-status-labels.mjs'
@@ -38,7 +38,7 @@ if (!(stopResult?.ok || stopResult?.skipped)) {
 }
 if (!(githubStopResult?.ok || githubStopResult?.skipped)) {
   messages.push(
-    'github-clanker completed but issue label transition to status:in-review failed. Fix gh auth/permissions and update labels manually before proceeding.'
+    'github-clanker completed but issue label transition to status:ready-to-merge failed. Fix gh auth/permissions and update labels manually before proceeding.'
   )
 }
 

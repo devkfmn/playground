@@ -8,10 +8,19 @@ export const STATUS = {
   todo: 'status:todo',
   inProgress: 'status:in-progress',
   inReview: 'status:in-review',
+  readyToMerge: 'status:ready-to-merge',
   done: 'status:done',
 }
 
-const ALL_STATUS = [STATUS.todo, STATUS.inProgress, STATUS.inReview, STATUS.done]
+const ALL_STATUS = [
+  STATUS.todo,
+  STATUS.inProgress,
+  STATUS.inReview,
+  STATUS.readyToMerge,
+  STATUS.done,
+]
+
+let cachedGhExe = null
 
 export function extractIssueNumber(...texts) {
   for (const t of texts) {
@@ -21,12 +30,25 @@ export function extractIssueNumber(...texts) {
   return null
 }
 
+/** Repository root for git/gh (hooks should run from project root; this guards cwd drift). */
+export function getGitWorkspaceRoot() {
+  try {
+    return execSync('git rev-parse --show-toplevel', {
+      encoding: 'utf8',
+      cwd: process.cwd(),
+    }).trim()
+  } catch {
+    return null
+  }
+}
+
 export function getRepoSlug() {
   if (process.env.GITHUB_REPOSITORY) return process.env.GITHUB_REPOSITORY.trim()
+  const cwd = getGitWorkspaceRoot() || process.cwd()
   try {
     const url = execSync('git remote get-url origin', {
       encoding: 'utf8',
-      cwd: process.cwd(),
+      cwd,
     }).trim()
     const m = url.match(/github\.com[:/]([^/]+\/[^/.]+)/)
     if (!m) return null
@@ -40,17 +62,50 @@ function log(...args) {
   console.error('[issue-status-labels]', ...args)
 }
 
-function gh(args) {
-  return spawnSync('gh', args, {
+function resolveGhExecutable() {
+  if (cachedGhExe !== null) return cachedGhExe
+  if (process.platform !== 'win32') {
+    cachedGhExe = 'gh'
+    return cachedGhExe
+  }
+  const r = spawnSync('where.exe', ['gh'], {
     encoding: 'utf8',
     shell: false,
+    cwd: process.cwd(),
+  })
+  if (r.status !== 0 || !String(r.stdout || '').trim()) {
+    cachedGhExe = 'gh'
+    return cachedGhExe
+  }
+  const lines = String(r.stdout)
+    .split(/\r?\n/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+  const preferExe = lines.find((p) => /(^|[\\/])gh\.exe$/i.test(p))
+  cachedGhExe = preferExe || lines[0] || 'gh'
+  return cachedGhExe
+}
+
+function logGhFailure(context, r) {
+  log(context, 'failed status=', r.status, 'error=', r.error?.message || '')
+  if (r.stderr?.trim()) log('stderr:', r.stderr.trim())
+  if (r.stdout?.trim()) log('stdout:', r.stdout.trim())
+}
+
+function gh(args) {
+  const cwd = getGitWorkspaceRoot() || process.cwd()
+  const exe = resolveGhExecutable()
+  return spawnSync(exe, args, {
+    encoding: 'utf8',
+    shell: false,
+    cwd,
   })
 }
 
 function ghIssueEdit(repo, issue, extraArgs) {
   const r = gh(['issue', 'edit', String(issue), '--repo', repo, ...extraArgs])
-  if (r.status !== 0 && r.stderr) {
-    log('gh stderr:', r.stderr.trim())
+  if (r.status !== 0 || r.error) {
+    logGhFailure('gh issue edit', r)
   }
   return r
 }
@@ -150,25 +205,25 @@ export function applyCodingClankerStopLabel(payload) {
 }
 
 /**
- * subagentStop: transition to status:in-review when github-clanker completes successfully (PR published / ready).
+ * subagentStop: transition to status:ready-to-merge when github-clanker completes successfully (PR published / ready).
  */
 export function applyGithubClankerStopLabel(payload) {
   if (!isGithubClankerSubagent(payload)) return { ok: true, skipped: true }
   if (payload.status !== 'completed') return { ok: true, skipped: true }
   const issue = extractIssueNumber(payload.task, payload.summary, payload.description)
   if (!issue) {
-    log('skip github in-review: no #issue in task/summary/description')
+    log('skip ready-to-merge: no #issue in task/summary/description')
     return { ok: false, reason: 'missing_issue' }
   }
   const repo = getRepoSlug()
   if (!repo) {
-    log('skip github in-review: could not resolve repo from origin')
+    log('skip ready-to-merge: could not resolve repo from origin')
     return { ok: false, reason: 'missing_repo', issue }
   }
-  removeStatusLabels(repo, issue, STATUS.inReview)
-  const r = ghIssueEdit(repo, issue, ['--add-label', STATUS.inReview])
+  removeStatusLabels(repo, issue, STATUS.readyToMerge)
+  const r = ghIssueEdit(repo, issue, ['--add-label', STATUS.readyToMerge])
   if (r.status !== 0) {
-    log('gh issue edit in-review (github-clanker) failed', r.status)
+    log('gh issue edit ready-to-merge (github-clanker) failed', r.status)
     return { ok: false, reason: 'gh_label_update_failed', issue, repo }
   }
   return { ok: true, issue, repo }

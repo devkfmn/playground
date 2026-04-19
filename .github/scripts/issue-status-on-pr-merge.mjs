@@ -30,6 +30,7 @@ const STATUS = {
   done: 'status:done',
   inProgress: 'status:in-progress',
   inReview: 'status:in-review',
+  readyToMerge: 'status:ready-to-merge',
 }
 
 function gh(args) {
@@ -45,6 +46,7 @@ for (const n of nums) {
   gh(['issue', 'edit', String(n), '--remove-label', STATUS.todo])
   gh(['issue', 'edit', String(n), '--remove-label', STATUS.inProgress])
   gh(['issue', 'edit', String(n), '--remove-label', STATUS.inReview])
+  gh(['issue', 'edit', String(n), '--remove-label', STATUS.readyToMerge])
   gh(['issue', 'close', String(n)])
 }
 

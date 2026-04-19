@@ -32,7 +32,7 @@ if (isCodingClankerSubagent(payload)) {
         user_message:
           'coding-clanker start blocked: include an issue reference like #16 in the delegated task so GitHub status labels can be updated.',
         agent_message:
-          'Include #<n> in the coding-clanker task text (for example "Build Issue #16") so hooks can set status:in-progress and status:in-review. Plans created by /plan-from-issue should carry that issue number into the Build step.',
+          'Include #<n> in the coding-clanker task text (for example "Build Issue #16") so hooks can set status:in-progress and later status:in-review. Plans created by /plan-from-issue should carry that issue number into the Build step.',
       })
     )
     process.exit(0)

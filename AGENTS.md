@@ -28,7 +28,8 @@ Only one of these labels should exist on an issue at a time:
 
 - **`status:todo`** — issue exists and local implementation has not started yet.
 - **`status:in-progress`** — `coding-clanker` is actively building or reworking on a feature branch.
-- **`status:in-review`** — local implementation is ready for `/build-and-run`, review-agent feedback, or an open PR.
+- **`status:in-review`** — local implementation is ready for **`/build-and-run`** and **`/review`** (before **`/github-publish`**).
+- **`status:ready-to-merge`** — **`github-clanker`** has finished: branch is pushed and a PR into **`dev`** exists or was updated; awaiting human merge.
 - **`status:done`** — PR has been merged to `dev`, issue is closed, and branch cleanup is handled by automation. In this repo, `done` means **merged to `dev`**, not human-tested and not promoted to `main`.
 
 Transition owners:
@@ -36,7 +37,7 @@ Transition owners:
 - Issue template applies **`status:todo`**.
 - Coding-clanker start hook applies **`status:in-progress`** and removes the other status labels.
 - Coding-clanker stop hook applies **`status:in-review`** and removes the other status labels.
-- Github-clanker successful completion hook applies **`status:in-review`** and removes the other status labels (re-asserts PR review state).
+- Github-clanker successful completion hook applies **`status:ready-to-merge`** and removes the other status labels.
 - Merge-to-`dev` GitHub Action applies **`status:done`**, removes the other status labels, closes the issue, and deletes the merged same-repo feature branch.
 
 ## PR body contract
@@ -70,7 +71,7 @@ Closes #n
 3. **Build** — Click **Build** on the accepted plan, or run **`/implement-plan #n`** (see [.cursor/skills/implement-plan/SKILL.md](.cursor/skills/implement-plan/SKILL.md)) so the chat agent delegates **`coding-clanker`** via **Task**. This repo is configured so Build should route to **`coding-clanker`**. Coding clanker creates or reuses the feature branch from latest `dev`, implements locally, runs **`npm run build`**, leaves the working tree ready for review, and transitions the issue through **`status:in-progress`** and **`status:in-review`**. Coding clanker does **not** commit, push, or open or update the PR. If Cursor does not route Build correctly, use **`/implement-plan #n`** or another explicit **`coding-clanker`** delegation as a fallback.
 4. **Human feature review/test** — Run **`/build-and-run`** (or **`/build-and-run appname`** in a multi-app repo). That command installs dependencies if needed, runs **`npm run build`**, starts the app locally, and opens the app URL with Cursor’s **Browser** tool (in-IDE), not the OS default browser. If feedback requires implementation changes, use the accepted plan’s **Build** step or **`/implement-plan #n`** again.
 5. **Manual review** — Run **`/review`**. This delegates **`review-clanker`** (combined code and UI report). If the result contains **`[[BLOCKING]]`**, go back to **Build** or **`/implement-plan #n`**, then re-run **`/build-and-run`** and **`/review`**.
-6. **GitHub publish** — Run **`/github-publish #42`** only after local review is ready. This delegates **`github-clanker`** to commit the current feature branch, push only that branch, and create or update one PR into **`dev`**.
+6. **GitHub publish** — Run **`/github-publish #42`** only after local review is ready. This delegates **`github-clanker`** to commit the current feature branch, push only that branch, and create or update one PR into **`dev`**. On success, hooks set the issue to **`status:ready-to-merge`**.
 7. **Dev** — **Human** merges the PR into **`dev`** on GitHub. On merge, automation sets issue **`status:done`**, closes linked issues, and deletes the merged feature branch (same-repo branches only). Run **`/sync-dev`** so this clone checks out **`dev`** and matches **`origin/dev`** before the next feature.
 8. **Human integration test** — Validate acceptance criteria on **`dev`** (deployed, preview, or local checkout). If this fails after merge, open a follow-up issue or reopen the original issue.
 9. **Main** — **Human** promotes **`dev` → `main`** only. Issue state does not change here.

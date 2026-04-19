@@ -44,13 +44,13 @@ alwaysApply: false
 
 ## GitHub label workflow (required)
 
-- Only one status label should exist on an issue at a time: **`status:todo`**, **`status:in-progress`**, **`status:in-review`**, or **`status:done`**.
+- Only one status label should exist on an issue at a time: **`status:todo`**, **`status:in-progress`**, **`status:in-review`**, **`status:ready-to-merge`**, or **`status:done`**.
 - New issues start as **`status:todo`**.
 - On `coding-clanker` start, hooks set issue label **`status:in-progress`** and remove the other status labels.
 - On successful `coding-clanker` completion (local implementation ready), hooks set **`status:in-review`** and remove the other status labels.
-- On successful `github-clanker` completion (branch pushed and PR ready), hooks set **`status:in-review`** and remove the other status labels.
+- On successful `github-clanker` completion (branch pushed and PR ready), hooks set **`status:ready-to-merge`** and remove the other status labels.
 - On merge to `dev`, GitHub Actions set **`status:done`**, remove the other status labels, and close the issue.
-- In this workflow, **`status:in-review`** means local implementation is ready for human or review-agent feedback, or a PR is open and awaiting review.
+- In this workflow, **`status:in-review`** means local implementation is ready for human or review-agent feedback before publish. **`status:ready-to-merge`** means the PR is published and awaiting human merge into **`dev`**.
 - In this workflow, **`status:done`** means **merged to `dev`**, not human-tested and not promoted to `main`.
 - If `#<n>` is missing from coding-clanker delegation, hook enforcement blocks coding-clanker startup.
 
