@@ -351,3 +351,140 @@ body {
   visibility: hidden;
   pointer-events: none;
 }
+
+/* Apartments / image sliders (Issue #25) */
+.apartments-page {
+  max-width: 72rem;
+}
+
+.apartments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+.apartment-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.apartment-card-body {
+  padding: 1rem 1.1rem 1.15rem;
+  flex: 1;
+}
+
+.apartment-card-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.apartment-card-desc {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.apartment-slider {
+  border-bottom: 1px solid var(--border);
+}
+
+.apartment-slider-frame {
+  position: relative;
+  aspect-ratio: 720 / 448;
+  background: var(--bg);
+}
+
+.apartment-slider-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.apartment-slider-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  flex-wrap: wrap;
+}
+
+.apartment-slider-btn {
+  margin: 0;
+  padding: 0.4rem 0.65rem;
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.apartment-slider-btn:hover {
+  background: rgba(110, 181, 255, 0.1);
+  border-color: var(--accent-dim);
+}
+
+.apartment-slider-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.apartment-slider-btn--icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  padding: 0.35rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.apartment-slider-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.apartment-slider-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.apartment-slider-dot:hover {
+  background: var(--muted);
+}
+
+.apartment-slider-dot:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.apartment-slider-dot--active {
+  background: var(--accent);
+  transform: scale(1.15);
+}
