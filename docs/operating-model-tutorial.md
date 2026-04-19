@@ -78,7 +78,7 @@ In Cursor, run:
 /sync-dev
 ```
 
-That follows [.cursor/skills/sync-dev/SKILL.md](../.cursor/skills/sync-dev/SKILL.md): fetch, check out **`dev`**, and pull latest so your workspace matches GitHub before the next issue.
+That follows [.cursor/skills/sync-dev/SKILL.md](../.cursor/skills/sync-dev/SKILL.md): fetch, check out `**dev**`, and pull latest so your workspace matches GitHub before the next issue.
 
 Shell equivalent:
 
