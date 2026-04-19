@@ -36,7 +36,7 @@ gh label create "status:in-review" --color 1D76DB --description "Local implement
 gh label create "status:done" --color 0E8A16 --description "Merged to dev; issue closed"
 ```
 
-Only one `status:*` label should exist at a time. Hooks move issues from `todo` to `in-progress` to `in-review` when **coding-clanker** runs locally (`gh` must be installed and authenticated). **`github-clanker`** publishes the reviewed feature branch with a PR into `dev`. [issue-status-on-pr-merge.yml](../.github/workflows/issue-status-on-pr-merge.yml) applies `status:done`, removes the other status labels, and closes linked issues when a PR merges into `dev`.
+Only one `status:*` label should exist at a time. Hooks move issues from `todo` to `in-progress` to `in-review` when **coding-clanker** runs locally (`gh` must be installed and authenticated), and re-assert **`status:in-review`** when **github-clanker** completes successfully. **`github-clanker`** publishes the reviewed feature branch with a PR into `dev`. [issue-status-on-pr-merge.yml](../.github/workflows/issue-status-on-pr-merge.yml) applies `status:done`, removes the other status labels, and closes linked issues when a PR merges into `dev`.
 
 ### GitHub branch protection and PR requirements
 
@@ -64,9 +64,9 @@ Only one `status:*` label should exist at a time. Hooks move issues from `todo` 
 | Area | Paths |
 |------|--------|
 | Agent instructions | [AGENTS.md](../AGENTS.md) |
-| Project rules | `.cursor/rules/ui-system.mdc`, `.cursor/rules/architecture.mdc`, `.cursor/rules/git-workflow.mdc` |
-| Skills | `.cursor/skills/plan-from-issue/`, `build-and-run/`, `code-review/`, `ui-review/`, `github-publish/` (each contains `SKILL.md`) |
-| Subagents | `.cursor/agents/coding-clanker.md`, `code-review-clanker.md`, `ui-review-clanker.md`, `github-clanker.md` |
+| Project rules | `.cursor/rules/operating-model-build.mdc`, `.cursor/rules/ui-system.mdc`, `.cursor/rules/architecture.mdc`, `.cursor/rules/git-workflow.mdc` |
+| Skills | `.cursor/skills/plan-from-issue/`, `build-and-run/`, `review/`, `github-publish/` (each contains `SKILL.md`) |
+| Subagents | `.cursor/agents/coding-clanker.md`, `review-clanker.md`, `github-clanker.md` |
 | Hooks | `.cursor/hooks.json`, `shell-policy.mjs`, `subagent-start-review-gate.mjs`, `subagent-stop-review-loop.mjs`, `issue-status-labels.mjs` |
 | Architecture map | [docs/cursor-operating-model-architecture.md](cursor-operating-model-architecture.md) |
 | Overview | [docs/cursor-system-overview.md](cursor-system-overview.md) |
@@ -75,10 +75,14 @@ Only one `status:*` label should exist at a time. Hooks move issues from `todo` 
 ### Notes
 
 - No `lint`, `typecheck`, or `test` script is installed yet.
-- The visible human workflow is: GitHub issue outside Cursor, `/plan-from-issue #n`, the accepted plan’s Build button, `/build-and-run`, `/code-review`, `/ui-review`, and `/github-publish #n`.
-- `coding-clanker` owns implementation, review agents are report-only, and `github-clanker` owns commit, push, and PR publication. If cloud execution is introduced later, document auth, secrets, network, and testability prerequisites before relying on it.
+- The visible human workflow is: GitHub issue outside Cursor, `/plan-from-issue #n`, the accepted plan’s Build button, `/build-and-run`, `/review`, and `/github-publish #n`.
+- `coding-clanker` owns implementation, `review-clanker` is report-only, and `github-clanker` owns commit, push, and PR publication. If cloud execution is introduced later, document auth, secrets, network, and testability prerequisites before relying on it.
 
 ## Change Log
+
+### 2026-04-19
+
+- Operating model: always-on Build delegation rule, `/build-and-run` steers to Cursor Browser, merged **`/review`** + **`review-clanker`**, and github-clanker hook re-asserts **`status:in-review`**.
 
 ### 2026-04-18
 

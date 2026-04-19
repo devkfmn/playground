@@ -15,9 +15,9 @@ Official Cursor docs used for this repo:
 Repo decisions derived from those docs:
 
 - Use **Plan Mode** for complex work and save accepted plans into the workspace.
-- Keep the human-visible surface minimal: GitHub issue, **`/plan-from-issue #n`**, the accepted plan’s **Build** button, **`/build-and-run`**, **`/code-review`**, **`/ui-review`**, and **`/github-publish #n`**.
-- Use **subagents** only where context isolation is clearly worth it: `coding-clanker`, `code-review-clanker`, `ui-review-clanker`, and `github-clanker`.
-- Keep **hooks** minimal: Git safety plus coding-clanker start and stop label automation.
+- Keep the human-visible surface minimal: GitHub issue, **`/plan-from-issue #n`**, the accepted plan’s **Build** button, **`/build-and-run`**, **`/review`**, and **`/github-publish #n`**.
+- Use **subagents** only where context isolation is clearly worth it: `coding-clanker`, `review-clanker`, and `github-clanker`.
+- Keep **hooks** minimal: Git safety plus coding-clanker and github-clanker issue label automation.
 - Treat automation as **local-first**. If cloud execution is introduced later, document auth, secrets, network, and testability prerequisites first.
 
 ## Build-button constraint
@@ -26,6 +26,7 @@ Cursor does **not** expose a repo-local way to hard-bind the Plan **Build** butt
 
 - `coding-clanker` explicitly says to use it proactively and always for post-plan implementation.
 - `plan-from-issue` is expected to emit a clear Build handoff with issue number and branch naming.
+- [.cursor/rules/operating-model-build.mdc](../.cursor/rules/operating-model-build.mdc) is **`alwaysApply: true`** so Plan Build is instructed to **Task**-delegate `coding-clanker` instead of implementing inline.
 - Minimal hooks validate coding-clanker starts and keep issue labels accurate when `coding-clanker` actually runs.
 
 ## Branch policy (strict)
@@ -48,15 +49,13 @@ flowchart LR
   plan --> build["Plan Build button"]
   build --> coding[CodingClanker]
   coding --> run["/build-and-run [app]"]
-  run --> code["/code-review"]
-  code --> ui["/ui-review"]
-  ui --> publish["/github-publish #n"]
+  run --> rev["/review"]
+  rev --> publish["/github-publish #n"]
   publish --> dev[MergeToDev]
   dev --> integration[HumanIntegrationTest]
   integration --> main[PromoteToMain]
 
-  code -->|"[[BLOCKING]]"| build
-  ui -->|"[[BLOCKING]]"| build
+  rev -->|"[[BLOCKING]]"| build
 ```
 
 ## GitHub state contracts
@@ -69,7 +68,7 @@ Only one issue status label should exist at a time:
 | --- | --- | --- |
 | `status:todo` | Issue exists and Build has not started yet | Issue template |
 | `status:in-progress` | `coding-clanker` is actively building or reworking on a feature branch | Coding-clanker start hook |
-| `status:in-review` | Local implementation is ready for `/build-and-run`, review-agent feedback, or an open PR | Coding-clanker stop hook |
+| `status:in-review` | Local implementation is ready for `/build-and-run`, review-agent feedback, or an open PR | Coding-clanker stop hook; github-clanker stop hook (re-assert) |
 | `status:done` | PR merged to `dev`; issue closed | Merge-to-`dev` GitHub Action |
 
 Important semantic choices:
@@ -104,7 +103,7 @@ Enforcement stance:
 | Workflow contract | [AGENTS.md](../AGENTS.md) |
 | Git/PR rule | [.cursor/rules/git-workflow.mdc](../.cursor/rules/git-workflow.mdc) |
 | Architecture/UI rules | [.cursor/rules/architecture.mdc](../.cursor/rules/architecture.mdc), [.cursor/rules/ui-system.mdc](../.cursor/rules/ui-system.mdc) |
-| Visible skills | [.cursor/skills/plan-from-issue/SKILL.md](../.cursor/skills/plan-from-issue/SKILL.md), [.cursor/skills/build-and-run/SKILL.md](../.cursor/skills/build-and-run/SKILL.md), [.cursor/skills/code-review/SKILL.md](../.cursor/skills/code-review/SKILL.md), [.cursor/skills/ui-review/SKILL.md](../.cursor/skills/ui-review/SKILL.md), [.cursor/skills/github-publish/SKILL.md](../.cursor/skills/github-publish/SKILL.md) |
+| Visible skills | [.cursor/skills/plan-from-issue/SKILL.md](../.cursor/skills/plan-from-issue/SKILL.md), [.cursor/skills/build-and-run/SKILL.md](../.cursor/skills/build-and-run/SKILL.md), [.cursor/skills/review/SKILL.md](../.cursor/skills/review/SKILL.md), [.cursor/skills/github-publish/SKILL.md](../.cursor/skills/github-publish/SKILL.md) |
 | Subagents | [.cursor/agents/*.md](../.cursor/agents/) |
 | Local hooks | [.cursor/hooks/*.mjs](../.cursor/hooks/) + [.cursor/hooks.json](../.cursor/hooks.json) |
 | Merge-to-`dev` automation | [.github/workflows/issue-status-on-pr-merge.yml](../.github/workflows/issue-status-on-pr-merge.yml), [.github/workflows/delete-feature-branch-on-merge.yml](../.github/workflows/delete-feature-branch-on-merge.yml) |
@@ -115,7 +114,7 @@ Enforcement stance:
 | --- | --- | --- |
 | `beforeShellExecution` | [shell-policy.mjs](../.cursor/hooks/shell-policy.mjs) | Denies `git worktree add`, unsafe pushes, wrong PR base, and PRs that omit `Closes #n` or `Fixes #n` |
 | `subagentStart` | [subagent-start-review-gate.mjs](../.cursor/hooks/subagent-start-review-gate.mjs) → [issue-status-labels.mjs](../.cursor/hooks/issue-status-labels.mjs) | Validates coding-clanker issue context, then applies **`status:in-progress`** |
-| `subagentStop` | [subagent-stop-review-loop.mjs](../.cursor/hooks/subagent-stop-review-loop.mjs) → [issue-status-labels.mjs](../.cursor/hooks/issue-status-labels.mjs) | Applies **`status:in-review`** for successful coding-clanker runs and nudges the rework loop when `[[BLOCKING]]` appears |
+| `subagentStop` | [subagent-stop-review-loop.mjs](../.cursor/hooks/subagent-stop-review-loop.mjs) → [issue-status-labels.mjs](../.cursor/hooks/issue-status-labels.mjs) | Applies **`status:in-review`** for successful coding-clanker and github-clanker runs; nudges the rework loop when `[[BLOCKING]]` appears |
 
 There is only one `subagentStart` and one `subagentStop` entry in [hooks.json](../.cursor/hooks.json), so each hook must emit a single JSON payload to stdout.
 
