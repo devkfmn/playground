@@ -26,9 +26,15 @@ When this subagent **starts**, project hooks set the issue to **`status:in-progr
 
 1. **Branch** — Create and work only on a **feature branch** from the latest **`dev`** (or default integration branch your parent names). **Do not** check out **`dev`** or **`main`** to do work, **do not** commit on **`dev`**/**`main`**, and **do not** push **`dev`** or **`main`**.
 1b. **No Git worktrees** — Do **not** run `git worktree add` (or create sibling checkout folders for isolation). Implement in the **same** clone the user opened; use normal `git checkout -b …` on a feature branch. Project hooks deny `git worktree add`.
-2. **Implement** — Follow the plan; respect [.cursor/rules/architecture.mdc](.cursor/rules/architecture.mdc) and [.cursor/rules/ui-system.mdc](.cursor/rules/ui-system.mdc) when touching UI.
+2. **Implement** — Follow the plan; respect [.cursor/rules/architecture.mdc](.cursor/rules/architecture.mdc) and [.cursor/rules/ui-system.mdc](.cursor/rules/ui-system.mdc) when touching UI (see **UI implementation** below).
 3. **Quality** — Run **`npm run build`** before finishing; only use scripts in [package.json](@package.json).
 4. **Stop after local implementation** — Do **not** commit, push, open or update a PR, or edit the PR body. Leave the current feature branch and working tree ready for human review, review-agent feedback, and later `github-clanker` publication.
+
+### UI implementation (when the plan touches UI)
+
+1. **Discover first** — Search and read shared UI, tokens/theme, and **reference screens** per [.cursor/rules/ui-system.mdc](.cursor/rules/ui-system.mdc) and repo-specific paths in [.cursor/rules/architecture.mdc](.cursor/rules/architecture.mdc) before adding new components or styles.
+2. **Reuse by default** — Use existing primitives and layout/shell patterns; add new base components only when the plan requires it or extending an existing one is not reasonable within scope.
+3. **Align with tokens/theme** — Avoid ad-hoc styling that bypasses the project’s token or theme system when one exists.
 
 ## After local build is ready
 
@@ -37,3 +43,6 @@ Tell the parent to run **`/build-and-run`** first, then **`/review`**, and use *
 ## Handoff back
 
 - Branch name, files changed, verification (`npm run build` result), and a short summary of what is now ready for review.
+- If any **UI files** changed (under paths covered by `ui-system.mdc` globs: `src/**`, `apps/**`, or `packages/**` with extensions `js`, `jsx`, `ts`, `tsx`, `css`), also include:
+  - **Reused:** which components, patterns, or reference screens you followed.
+  - **New:** any new primitive or pattern and a one-line reason it could not be an extension of an existing one.

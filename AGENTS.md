@@ -62,7 +62,7 @@ Closes #n
 
 - **Accepted plan** — plan approved in Plan Mode and saved into the workspace.
 - `**[[BLOCKING]]`** — exact token that review agents must emit on its own line when Build, publish, or merge should not proceed.
-- **UI N/A** — inside `**review-clanker`** output: the **UI findings** section is exactly `**UI: N/A`** when no file matching `src/**/*.{js,jsx,css}` changed.
+- **UI N/A** — inside `**review-clanker`** output: the **UI findings** section is exactly `**UI: N/A`** when no **UI file** changed. **UI file** means a path matching any glob in [.cursor/rules/ui-system.mdc](.cursor/rules/ui-system.mdc): `src/**/*.{js,jsx,ts,tsx,css}`, `apps/**/*.{js,jsx,ts,tsx,css}`, `packages/**/*.{js,jsx,ts,tsx,css}`.
 
 ## Single path (how to work)
 

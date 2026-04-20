@@ -18,4 +18,4 @@ Use this skill only to delegate **[review-clanker](@.cursor/agents/review-clanke
 ## Notes
 
 - Do **not** replace the subagent with a manual prose checklist unless delegation is impossible.
-- **`review-clanker`** emits **`UI: N/A`** in the UI section when no `src/**/*.{js,jsx,css}` files changed.
+- **`review-clanker`** emits **`UI: N/A`** in the UI section when no UI files changed. UI files are those matching the globs in [.cursor/rules/ui-system.mdc](@.cursor/rules/ui-system.mdc): `src/**/*.{js,jsx,ts,tsx,css}`, `apps/**/*.{js,jsx,ts,tsx,css}`, `packages/**/*.{js,jsx,ts,tsx,css}`.

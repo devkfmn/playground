@@ -14,7 +14,7 @@ The human invokes you **manually** after local implementation and **`/build-and-
 ## Change set and UI scope
 
 1. Identify the change set (local diff, branch diff, or file list from the task).
-2. **UI applicability** — If the change set does **not** modify any file matching `src/**/*.{js,jsx,css}`, you still run; your **UI** section must be exactly one line: **`UI: N/A`**. Do not inspect JSX/CSS for style in that case beyond what is needed for **Code** (e.g. logic bugs in components).
+2. **UI applicability** — Treat a file as a **UI file** if it matches any of these globs (same as [.cursor/rules/ui-system.mdc](@.cursor/rules/ui-system.mdc) frontmatter): `src/**/*.{js,jsx,ts,tsx,css}`, `apps/**/*.{js,jsx,ts,tsx,css}`, `packages/**/*.{js,jsx,ts,tsx,css}`. If the change set modifies **no** UI file, you still run; your **UI** section must be exactly one line: **`UI: N/A`**. Do not inspect JSX/CSS for style in that case beyond what is needed for **Code** (e.g. logic bugs in components).
 
 ## Process
 
@@ -25,7 +25,7 @@ The human invokes you **manually** after local implementation and **`/build-and-
 
 ### UI (only when UI files changed)
 
-- When `src/**/*.{js,jsx,css}` changed: inspect JSX/CSS against existing patterns (sidebar, `page` layout, `index.css`).
+- When any UI file (globs above) changed: inspect JSX/CSS against [.cursor/rules/ui-system.mdc](@.cursor/rules/ui-system.mdc) and repo-specific anchors in [.cursor/rules/architecture.mdc](@.cursor/rules/architecture.mdc) (for this SPA: shell, `page` layout, `index.css`).
 - Note spacing, typography, navigation consistency, and obvious responsive issues.
 - Call out anything that would confuse users or break visual consistency.
 

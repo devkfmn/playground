@@ -22,6 +22,14 @@ alwaysApply: false
 - Keep new routes and labels consistent with current `navRoutes` entries.
 - Do not introduce new top-level folders without a clear need; stay aligned with this small SPA structure.
 
+## UI entrypoints (playground SPA)
+
+Concrete references for [ui-system.mdc](@.cursor/rules/ui-system.mdc) in this repo:
+
+- **App shell and navigation:** [src/App.jsx](@src/App.jsx) — sidebar, main content area, `<Routes>` from `navRoutes`.
+- **Global styles:** [src/index.css](@src/index.css) — spacing, typography, utility classes.
+- **Reference pages:** [src/pages/Home.jsx](@src/pages/Home.jsx), [src/pages/Info.jsx](@src/pages/Info.jsx) — `page`, `page-lead`, `info-section`, and similar layout/class patterns.
+
 ## Cross-cutting policy
 
 - Git and PR rules: [git-workflow.mdc](@.cursor/rules/git-workflow.mdc).
