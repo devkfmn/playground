@@ -6,7 +6,7 @@ const inputLike =
 const checkLabel =
   'inline-flex cursor-pointer items-center gap-2 text-[0.9375rem] text-fg'
 
-export default function Settings() {
+export default function Settings({ theme, setTheme }) {
   const [emailNotifications, setEmailNotifications] = useState(true)
   const [compactUi, setCompactUi] = useState(false)
   const [themeDensity, setThemeDensity] = useState('comfortable')
@@ -22,8 +22,8 @@ export default function Settings() {
     <div className="max-w-2xl">
       <h1 className="mb-3 text-[1.75rem] font-semibold">Settings</h1>
       <p className="mb-6 text-[1.05rem] leading-normal text-muted [&_strong]:text-fg">
-        Example preferences for this playground app. Values stay in memory only until you refresh
-        the page.
+        Example preferences for this playground app. Most options stay in memory only until you
+        refresh; <strong>color theme</strong> (dark or light) is saved in this browser.
       </p>
 
       <section className="mb-7">
@@ -60,6 +60,20 @@ export default function Settings() {
             />
             Show tooltips
           </label>
+        </div>
+        <div className="mb-4">
+          <label className={fieldLabel} htmlFor="settings-color-theme">
+            Color theme
+          </label>
+          <select
+            id="settings-color-theme"
+            className={inputLike}
+            value={theme}
+            onChange={(e) => setTheme(e.target.value)}
+          >
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+          </select>
         </div>
         <div className="mb-0">
           <label className={fieldLabel} htmlFor="settings-density">

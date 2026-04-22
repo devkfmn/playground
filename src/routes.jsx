@@ -8,12 +8,12 @@ import PaymentMethods from './pages/PaymentMethods.jsx'
 import Settings from './pages/Settings.jsx'
 
 export const navRoutes = [
-  { path: '/', label: 'Home', element: <Home /> },
-  { path: '/info', label: 'Info', element: <Info /> },
-  { path: '/calculator', label: 'Calculator', element: <Calculator /> },
-  { path: '/calendar', label: 'Calendar', element: <Calendar /> },
-  { path: '/apartments', label: 'Apartments', element: <Apartments /> },
-  { path: '/bookings', label: 'Bookings', element: <Bookings /> },
-  { path: '/payment-methods', label: 'Payment methods', element: <PaymentMethods /> },
-  { path: '/settings', label: 'Settings', element: <Settings /> },
+  { path: '/', label: 'Home', Component: Home },
+  { path: '/info', label: 'Info', Component: Info },
+  { path: '/calculator', label: 'Calculator', Component: Calculator },
+  { path: '/calendar', label: 'Calendar', Component: Calendar },
+  { path: '/apartments', label: 'Apartments', Component: Apartments },
+  { path: '/bookings', label: 'Bookings', Component: Bookings },
+  { path: '/payment-methods', label: 'Payment methods', Component: PaymentMethods },
+  { path: '/settings', label: 'Settings', Component: Settings },
 ]
