@@ -1,6 +1,7 @@
 ---
 
 ## name: plan-issue
+
 description: Produce a structured implementation plan directly from a GitHub issue. Use when the user types `/plan-issue #123` and the GitHub issue already contains the details.
 disable-model-invocation: true
 
@@ -37,7 +38,7 @@ On successful completion of `/plan-issue #n`:
   - `Build owner: coding-clanker`
   - `Build note: Click Build on this accepted plan.`
   - `Build execution: The agent handling Build must delegate via Task → coding-clanker (not inline edits); task text must include #<n>.`
-  - Alternatively the human can run `**/implement-issue #<n>`** so the chat agent delegates `**coding-clanker**` without using the Build button.
+  - Alternatively the human can run `**/implement-issue #<n>`** so the chat agent delegates `**coding-clanker`** without using the Build button.
 
 ## References
 

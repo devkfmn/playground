@@ -74,7 +74,7 @@ Use the `**##**` headings and checklist style from the template’s textarea def
 
 ## Failure handling
 
-- Surface `**gh`** stderr. Common fixes: `**gh auth login**`, `**gh auth refresh**`, wrong repo (`-R`), or missing `**status:todo**` label on the GitHub repo.
+- Surface `**gh`** stderr. Common fixes: `**gh auth login`**, `**gh auth refresh**`, wrong repo (`-R`), or missing `**status:todo**` label on the GitHub repo.
 - Do not create the issue without `**status:todo**` unless the user explicitly overrides in the same thread.
 
 ## References
