@@ -1,8 +1,26 @@
+import { useEffect, useState } from 'react'
 import { Routes, Route, NavLink } from 'react-router-dom'
 import { navRoutes } from './routes.jsx'
 import { cn } from './cn.js'
+import Settings from './pages/Settings.jsx'
+
+const THEME_STORAGE_KEY = 'playground-theme'
 
 export default function App() {
+  const [theme, setTheme] = useState(() => {
+    const raw = document.documentElement.dataset.theme
+    return raw === 'light' || raw === 'dark' ? raw : 'dark'
+  })
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, theme)
+    } catch {
+      /* ignore */
+    }
+  }, [theme])
+
   return (
     <div className="flex min-h-screen">
       <aside className="w-[220px] shrink-0 border-r border-border bg-surface py-5">
@@ -31,8 +49,18 @@ export default function App() {
       </aside>
       <main className="min-h-0 flex-1 overflow-auto px-10 py-8">
         <Routes>
-          {navRoutes.map(({ path, element }) => (
-            <Route key={path} path={path} element={element} />
+          {navRoutes.map(({ path, Component }) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                Component === Settings ? (
+                  <Settings theme={theme} setTheme={setTheme} />
+                ) : (
+                  <Component />
+                )
+              }
+            />
           ))}
         </Routes>
       </main>

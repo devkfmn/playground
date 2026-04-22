@@ -3,6 +3,7 @@
 @theme {
   --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
 
+  /* Dark defaults (also used when `data-theme` is absent or `dark`) */
   --color-bg: #0f1419;
   --color-surface: #1a2332;
   --color-border: #2d3a4d;
@@ -10,6 +11,16 @@
   --color-muted: #8b9cb3;
   --color-accent: #6eb5ff;
   --color-accent-dim: #4a8fd4;
+}
+
+:root[data-theme='light'] {
+  --color-bg: #f4f6fb;
+  --color-surface: #ffffff;
+  --color-border: #d8dee8;
+  --color-fg: #121826;
+  --color-muted: #5c6b80;
+  --color-accent: #2563eb;
+  --color-accent-dim: #1d4ed8;
 }
 
 @layer base {
