@@ -16,10 +16,14 @@ Use this skill only to delegate **[github-clanker](@.cursor/agents/github-clanke
 ## Steps
 
 1. Identify the current feature branch.
-2. Gather the latest verification context from the local branch (for example the latest successful `npm run build` and local review completion).
-3. Delegate `**github-clanker`** with the issue number, current branch, and publish-ready context.
+2. Delegate `**github-clanker`** with the issue number and current feature branch.
+3. Require this strict publish order from `**github-clanker`**:
+  - Commit.
+  - Push.
+  - Open or update a pull request that targets `**dev`**.
+  - Checkout `**dev`** locally after publish completes.
 4. After successful delegation result, update issue labels explicitly:
-  - Remove the current `status:*` label if present.
+  - Remove the current `status:`* label if present.
   - Add `status:ready-to-merge`.
 5. Do not replace the subagent with inline commit or PR work unless delegation is impossible.
 
