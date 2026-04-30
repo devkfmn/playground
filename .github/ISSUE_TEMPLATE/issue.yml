@@ -1,0 +1,40 @@
+name: Issue
+description: Create a generic work item.
+title: "[Issue] "
+labels:
+  - status:todo
+body:
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - Feature
+        - Bug
+        - Chore
+        - Refactor
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      placeholder: |
+        Problem / Goal:
+        -
+
+        Expected Outcome:
+        -
+
+        Acceptance Criteria:
+        - [ ]
+        - [ ]
+        - [ ]
+
+        Context / Notes:
+        -
+    validations:
+      required: true
