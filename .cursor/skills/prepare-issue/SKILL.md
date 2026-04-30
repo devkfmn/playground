@@ -1,8 +1,7 @@
 ---
-
-## name: prepare-issue
-
+name: prepare-issue
 description: Prepares an existing GitHub issue for Cursor Plan Mode by creating a synced feature branch and generating a planning prompt.
+--- 
 
 # Prepare Issue
 
